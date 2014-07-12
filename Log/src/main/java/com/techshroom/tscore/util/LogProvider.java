@@ -1,17 +1,39 @@
 package com.techshroom.tscore.util;
 
-
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
 public final class LogProvider {
 
 	private LogProvider() {
 	}
+
+	private static final Logger bkupLog = Logger.getLogger("TSCore-backuplog");
+
+	/**
+	 * Original streams from start of program
+	 */
+	public static final PrintStream STDOUT = System.out, STDERR = System.err;
+
+	public static final PrintStream METHODIZEDOUT, METHODIZEDERR;
+
+	static {
+		STDOUT.print("Methodizing STD streams...");
+		METHODIZEDOUT = new MethodizedSTDStream(STDOUT).asPrintStream();
+		METHODIZEDERR = new MethodizedSTDStream(STDERR).asPrintStream();
+		STDOUT.println("complete.");
+		METHODIZEDOUT.print("Setting System.out...");
+		System.setOut(METHODIZEDOUT);
+		METHODIZEDOUT.println("complete.");
+		METHODIZEDERR.print("Setting System.err...");
+		System.setErr(METHODIZEDERR);
+		METHODIZEDERR.println("complete.");
+	}
+
+	public static Logger LOG = bkupLog;
 
 	/**
 	 * A dummy method to load this class. Does nothing.
@@ -88,29 +110,4 @@ public final class LogProvider {
 	public static boolean isValidGroup(LoggingGroup g) {
 		return getValidGroups().contains(g);
 	}
-
-	private static final Logger bkupLog = Logger.getLogger(
-			 "TSCore-backuplog");
-	
-	/**
-	 * Original streams from start of program
-	 */
-	public static final PrintStream STDOUT = System.out, STDERR = System.err;
-	
-	public static final PrintStream METHODIZEDOUT, METHODIZEDERR;
-	
-	static {
-		STDOUT.print("Methodizing STD streams...");
-		METHODIZEDOUT = new MethodizedSTDStream(STDOUT).asPrintStream();
-		METHODIZEDERR = new MethodizedSTDStream(STDERR).asPrintStream();
-		STDOUT.println("complete.");
-		METHODIZEDOUT.print("Setting System.out...");
-		System.setOut(METHODIZEDOUT);
-		METHODIZEDOUT.println("complete.");
-		METHODIZEDERR.print("Setting System.err...");
-		System.setErr(METHODIZEDERR);
-		METHODIZEDERR.println("complete.");
-	}
-
-	public static Logger LOG = bkupLog;
 }
