@@ -95,4 +95,7 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
         data = "";
     }
 
+    public PrintStream asPrintStream() {
+    	return new PrintStream(this);
+    }
 }
