@@ -1,4 +1,4 @@
-package com.techshroom.unplanned.util.stepbuilder;
+package com.techshroom.tscore.util.stepbuilder;
 
 public interface OneArgStep<BUILDTYPE, ARG1, NEXT extends Step<BUILDTYPE, ?>>
 		extends Step<BUILDTYPE, NEXT> {
