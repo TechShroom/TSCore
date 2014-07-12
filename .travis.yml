@@ -9,4 +9,4 @@ before_install:
 after_success:
 - gradle travisRelease
 env:
-  secure: C9Ai91c5zEUOsrF/clhpQBbgu+wK91fdWpO7PWrhFmT09gOPXompI1SHz3iN3RCtJ2WLu1KMmuQe9vz8RkyRib6vHcPGDAi9Nwi0tyb5heQ3GobYm/hb1zEFSyeMuj14mA6WtjrfR1MrCT5uo4mZ/eK1tVjLed2ZDuuF5mt4rMo=
+  secure: MjANwdcG1f4OPnZnnI4JUdPfeRirj0NMScphOxXkxB9FDrfxH6s8/R9UlxvUhLFV1bVODKaJ8lI8zA/ZQUULFCs+k88XpEbjUAYVdADGW/mOGViQCgFhHhMp2ZtH2OayJbbvR0bXZPvEHSfKK0BYPXcFPSVBAUrsJLdAnhtynMU=
