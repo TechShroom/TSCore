@@ -1,0 +1,91 @@
+ext.FTP_USER="ket1999"
+version = ext.version = "1.0.0"
+
+subprojects {
+    apply plugin: 'java'
+}
+apply from: 'util.gradle', to: project
+
+if (!project.hasJDK6RT()) {
+    throw new RuntimeException("Need to know where your JDK6 rt.jar is! " +
+    "(set JAVA6_HOME to a jdk6 home or set JDK6_RT to the rt.jar)")
+}
+
+// token: a54f9f87121b530f4a918f7b156efb2c259ff0db
+
+// ext.oauth = "a54f9f87121b530f4a918f7b156efb2c259ff0db"
+
+task doBuild {}
+
+apply from: 'github.gradle', to: project
+
+def subdeps = [:]
+def submvn = [:]
+
+File[] dirList(String dir) {
+    file(dir).listFiles({file -> file.isDirectory() && !file.getName().startsWith(".")} as FileFilter).sort()
+}
+
+void add(item, value) {
+    if (item.key != value) {
+        item.value.add(value)
+    }
+}
+
+dirList(".").each{
+    subdeps[it.getName()] = []
+    submvn[it.getName()] = []
+}
+
+subdeps.entrySet().each{
+}
+
+subprojects {
+    println "=== Configuring $name ==="
+
+    def root = getParent()
+    root.doBuild.dependsOn(":$name:build")
+    // java 6 compat
+    compileJava.sourceCompatibility = '1.6'
+    compileJava.targetCompatibility = '1.6'
+    compileJava.options.bootClasspath = getJDK6RT()
+    version = root.version
+
+    jar {
+        version = root.version
+    }
+
+    apply plugin: 'eclipse'
+    
+    eclipse {
+        jdt {
+            sourceCompatibility = 1.6
+            targetCompatibility = 1.6
+        }
+    }
+
+    // eclipse bug workaround
+    task reeclipse(dependsOn: ['cleanEclipseClasspath', 'eclipse'])
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        submvn[name].each{
+            compile "$it"
+        }
+
+        subdeps[name].each{
+            compile project(":$it")
+        }
+
+        testCompile group: 'junit', name: 'junit', version: '4.+'
+    }
+
+    println '=== Complete ==='
+}
+
+if (_hasProperty("TRAVIS") && _property("TRAVIS").toBoolean()) {
+    apply from: 'travis.gradle', to: project
+}

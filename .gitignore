@@ -1,0 +1,17 @@
+# package
+*.jar
+
+# eclipse
+.classpath
+.project
+.metadata/
+.settings/
+bin/
+
+# gradle
+.gradle/
+build/
+
+# custom
+.build/
+*.log*
