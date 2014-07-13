@@ -11,6 +11,6 @@ public class LogProviderTest {
 	 */
 	@Test
 	public void inits() {
-		LogProvider.init();
+		//LogProvider.init();
 	}
 }

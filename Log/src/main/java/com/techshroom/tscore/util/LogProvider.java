@@ -1,10 +1,15 @@
 package com.techshroom.tscore.util;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Set;
+import java.util.logging.Filter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 public final class LogProvider {
 
@@ -36,78 +41,100 @@ public final class LogProvider {
 	public static Logger LOG = bkupLog;
 
 	/**
-	 * A dummy method to load this class. Does nothing.
+	 * Sets the {@link #LOG} variable.
+	 * 
+	 * @param l
+	 *            - the new logger that should be used
 	 */
-	public static void init() {
-
+	public static void setLog(Logger l) {
+		LOG = l;
+		LOG.log(Level.INFO, "Using log " + l.getName());
 	}
 
 	/**
-	 * <p>
-	 * These logging groups are used to filter certain information. The default
-	 * logging combo is INFO + WARNING + ERROR.
-	 * </p>
+	 * Initializes a logger instance for the given resource. Prints to STDOUT.
 	 * 
-	 * Logging groups from lowest to highest: INFO, WARNING, DEBUG, JUNK.<br>
-	 * <br>
+	 * @param resource
+	 *            - the name for the logger
 	 * 
-	 * Recommended usages:
-	 * <dl>
-	 * <dt>INFO</dt>
-	 * <dd>- STDOUT</dd>
-	 * <dt>WARNING</dt>
-	 * <dd>- warnings like non-fatal OpenGL errors</dd>
-	 * <dt>ERROR</dt>
-	 * <dd>- STDERR</dd>
-	 * <dt>DEBUG</dt>
-	 * <dd>- debug info for developing</dd>
-	 * <dt>JUNK</dt>
-	 * <dd>- for batch-dumping information</dd>
-	 * </dl>
+	 * @return a new Logger dumping to STDOUT.
 	 */
-	public static enum LoggingGroup {
-		/**
-		 * Standard output for users; etc.
-		 */
-		INFO,
-		/**
-		 * Non-fatal errors or suggestions for performance
-		 */
-		WARNING,
-		/**
-		 * Fatal errors
-		 */
-		ERROR,
-		/**
-		 * Debug output for developing
-		 */
-		DEBUG,
-		/**
-		 * Dump group for unloading tons of data
-		 */
-		JUNK;
-
-		public static final EnumSet<LoggingGroup> ALL = EnumSet
-				.allOf(LoggingGroup.class);
+	public static Logger init(String resource) {
+		return init(resource, true);
 	}
 
-	private static Set<LoggingGroup> logGroups = EnumSet.of(LoggingGroup.INFO,
-			LoggingGroup.WARNING, LoggingGroup.ERROR);
-
-	public static Set<LoggingGroup> getValidGroups() {
-		return EnumSet.copyOf(logGroups);
+	/**
+	 * Initializes a logger instance for the given resource, printing to the
+	 * specified standard stream.
+	 * 
+	 * @param resource
+	 *            - the name for the logger
+	 * @param stdout
+	 *            - true for STDOUT, false for STDERR
+	 * 
+	 * @return a new Logger dumping to the specified standard stream.
+	 */
+	public static Logger init(String resource, boolean stdout) {
+		return init(resource, stdout ? STDOUT : STDERR);
 	}
 
-	public static Set<LoggingGroup> setValidGroups(Set<LoggingGroup> groups) {
-		logGroups = EnumSet.copyOf(groups);
-		return getValidGroups();
+	/**
+	 * Initializes a logger instance for the given resource, printing to the
+	 * specified stream.
+	 * 
+	 * @param resource
+	 *            - the name for the logger
+	 * @param stream
+	 *            - the output stream
+	 * 
+	 * @return a new Logger dumping to the specified stream.
+	 */
+	public static Logger init(String resource, OutputStream stream) {
+		Logger l = Logger.getLogger(resource);
+		l.setUseParentHandlers(false);
+		l.addHandler(new StreamHandler(stream, new SimpleFormatter()));
+		return l;
 	}
 
-	public static Set<LoggingGroup> setValidGroups(LoggingGroup... groups) {
-		return setValidGroups(EnumSet.copyOf(Arrays.asList(groups)));
+	/**
+	 * Activate the filter for logging groups. Leave the level of the logger
+	 * alone after this method.
+	 * 
+	 * @param l
+	 *            - the logger to activate
+	 * @return the logger
+	 */
+	public static Logger activateLoggingGroups(Logger l) {
+		l.setFilter(new Filter() {
+
+			@Override
+			public boolean isLoggable(LogRecord record) {
+				return false;
+			}
+		});
+		l.setLevel(Level.ALL);
+		return l;
 	}
 
-	public static boolean isValidGroup(LoggingGroup g) {
-		return getValidGroups().contains(g);
+	/**
+	 * Deactivates the logging groups, but leaves settings intact. A call to
+	 * {@link #activateLoggingGroups(Logger)} will re-enable with the same
+	 * settings.
+	 * 
+	 * @param l
+	 *            - the logger to deactivate
+	 * @return the logger
+	 */
+	public static Logger deactivateLoggingGroups(Logger l) {
+		LGFilter filter = safeGetFilter(l);
+		return l;
+	}
+
+	private static LGFilter safeGetFilter(Logger l) {
+		Filter f = l.getFilter();
+		if (f instanceof LGFilter) {
+			return (LGFilter) f;
+		}
+		return null;
 	}
 }
