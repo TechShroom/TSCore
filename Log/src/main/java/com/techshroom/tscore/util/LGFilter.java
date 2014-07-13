@@ -38,6 +38,6 @@ class LGFilter implements Filter {
 
 	@Override
 	public boolean isLoggable(LogRecord record) {
-		return disabled || true;
+		return disabled || ;
 	}
 }

@@ -127,6 +127,9 @@ public final class LogProvider {
 	 */
 	public static Logger deactivateLoggingGroups(Logger l) {
 		LGFilter filter = safeGetFilter(l);
+		if (filter != null) {
+			filter
+		}
 		return l;
 	}
 
