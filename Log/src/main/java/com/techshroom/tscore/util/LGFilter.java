@@ -1,9 +1,11 @@
 package com.techshroom.tscore.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Filter;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 class LGFilter implements Filter {
@@ -15,29 +17,43 @@ class LGFilter implements Filter {
 		return EnumSet.copyOf(logGroups);
 	}
 
-	Set<LoggingGroup> setValidGroups(Set<LoggingGroup> groups) {
+	void setValidGroups(Collection<LoggingGroup> groups) {
+		if (groups.isEmpty()) {
+			logGroups = EnumSet.noneOf(LoggingGroup.class);
+			return;
+		}
 		logGroups = EnumSet.copyOf(groups);
-		return getValidGroups();
 	}
 
-	Set<LoggingGroup> setValidGroups(LoggingGroup... groups) {
-		return setValidGroups(EnumSet.copyOf(Arrays.asList(groups)));
+	void setValidGroups(LoggingGroup... groups) {
+		setValidGroups(Arrays.asList(groups));
 	}
 
 	boolean isValidGroup(LoggingGroup g) {
 		return getValidGroups().contains(g);
 	}
-	
+
 	void disable() {
 		disabled = true;
 	}
-	
+
 	void enable() {
 		disabled = false;
 	}
 
 	@Override
 	public boolean isLoggable(LogRecord record) {
-		return disabled || ;
+		if (disabled) {
+			return true;
+		}
+		Level match = record.getLevel();
+		LoggingGroup matched = LoggingGroup.lookupLevel(match.intValue());
+		if (matched == null) {
+			// not a known handler level
+			// since we don't go by Level's values + structure this is an
+			// invalid value
+			return false;
+		}
+		return isValidGroup(matched);
 	}
 }

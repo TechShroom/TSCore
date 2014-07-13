@@ -37,8 +37,8 @@ dirList(".").each{
     submvn[it.getName()] = []
 }
 
-subdeps.entrySet().each{
-}
+submvn["Log"] += "org.apache.logging.log4j:log4j-api:2.0-rc2"
+submvn["Log"] += "org.apache.logging.log4j:log4j-core:2.0-rc2"
 
 subprojects {
     println "=== Configuring $name ==="

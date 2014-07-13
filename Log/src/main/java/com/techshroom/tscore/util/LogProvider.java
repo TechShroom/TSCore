@@ -2,11 +2,9 @@ package com.techshroom.tscore.util;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.Collection;
 import java.util.logging.Filter;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
@@ -105,14 +103,15 @@ public final class LogProvider {
 	 * @return the logger
 	 */
 	public static Logger activateLoggingGroups(Logger l) {
-		l.setFilter(new Filter() {
-
-			@Override
-			public boolean isLoggable(LogRecord record) {
-				return false;
-			}
-		});
-		l.setLevel(Level.ALL);
+		LGFilter filter = safeGetFilter(l);
+		if (filter == null) {
+			l.setFilter(new LGFilter());
+			filter = safeGetFilter(l);
+		}
+		filter.enable();
+		if (l.getLevel() != Level.ALL) {
+			l.setLevel(Level.ALL);
+		}
 		return l;
 	}
 
@@ -128,7 +127,24 @@ public final class LogProvider {
 	public static Logger deactivateLoggingGroups(Logger l) {
 		LGFilter filter = safeGetFilter(l);
 		if (filter != null) {
-			filter
+			filter.disable();
+		}
+		return l;
+	}
+
+	public static Logger setLoggingGroups(Logger l, LoggingGroup... groups) {
+		LGFilter filter = safeGetFilter(l);
+		if (filter != null) {
+			filter.setValidGroups(groups);
+		}
+		return l;
+	}
+
+	public static Logger setLoggingGroups(Logger l,
+			Collection<LoggingGroup> groups) {
+		LGFilter filter = safeGetFilter(l);
+		if (filter != null) {
+			filter.setValidGroups(groups);
 		}
 		return l;
 	}
