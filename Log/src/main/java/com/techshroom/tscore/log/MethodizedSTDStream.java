@@ -1,4 +1,4 @@
-package com.techshroom.tscore.util;
+package com.techshroom.tscore.log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
