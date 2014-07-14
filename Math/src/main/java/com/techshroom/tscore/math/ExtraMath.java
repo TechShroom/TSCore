@@ -4,7 +4,9 @@ import static com.techshroom.tscore.math.BIMath.lessThan;
 
 import java.math.BigInteger;
 
-public class ExtraMath {
+public final class ExtraMath {
+	private ExtraMath() {
+	}
 
 	/**
 	 * Handles BigInteger factorial.
