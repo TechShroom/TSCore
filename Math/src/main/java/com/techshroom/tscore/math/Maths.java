@@ -1,4 +1,4 @@
-package com.techshroom.tscore.util;
+package com.techshroom.tscore.math;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -175,22 +175,22 @@ public final class Maths {
 
 	public static boolean lessThanOrEqualTo(double a, double b) {
 		int c = Double.compare(a, b);
-		return c <= 0;
+		return c <= med;
 	}
 
 	public static boolean lessThan(double a, double b) {
 		int c = Double.compare(a, b);
-		return c < 0;
+		return c < med;
 	}
 
 	public static boolean greaterThanOrEqualTo(double a, double b) {
 		int c = Double.compare(a, b);
-		return c >= 0;
+		return c >= med;
 	}
 
 	public static boolean greaterThan(double a, double b) {
 		int c = Double.compare(a, b);
-		return c > 0;
+		return c > med;
 	}
 
 	/*
