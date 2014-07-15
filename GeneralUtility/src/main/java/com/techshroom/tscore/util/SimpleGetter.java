@@ -22,6 +22,7 @@ public abstract class SimpleGetter<T, ARG> implements Getter<T> {
 
 	protected abstract T doGet();
 
+	@SuppressWarnings("static-method")
 	protected void handleUnsetArg() {
 		throw new IllegalStateException("must set argument");
 	}
