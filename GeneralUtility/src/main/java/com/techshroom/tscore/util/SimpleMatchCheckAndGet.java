@@ -26,4 +26,9 @@ public class SimpleMatchCheckAndGet<INPUT, OUTPUT> implements
 		return getter.get();
 	}
 
+	@Override
+	public <X> void setData(GetterKey<X> key, X value) {
+		getter.setData(key, value);
+	}
+
 }
