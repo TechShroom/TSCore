@@ -3,10 +3,10 @@ package com.techshroom.tscore.math;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.techshroom.tscore.util.Getter;
 import com.techshroom.tscore.util.GetterKey;
 import com.techshroom.tscore.util.MatchCheckAndGet;
 import com.techshroom.tscore.util.MatchChecker;
+import com.techshroom.tscore.util.SimpleGetter;
 import com.techshroom.tscore.util.SimpleMatchCheckAndGet;
 
 public final class OperatorService {
@@ -40,22 +40,16 @@ public final class OperatorService {
 					public boolean matches(String t) {
 						return t.indexOf('(') >= 0;
 					}
-				}, new Getter<InfixParenProcessor>() {
-					private String expr;
-
+				}, new SimpleGetter<InfixParenProcessor, String>() {
 					@Override
-					public InfixParenProcessor get() {
-						if (expr == null) {
-							throw new IllegalStateException(
-									"must set the expression");
-						}
-						return new InfixParenProcessor(expr);
+					protected InfixParenProcessor doGet() {
+						return new InfixParenProcessor(getARG());
 					}
 
 					@Override
 					public <X> void setData(GetterKey<X> key, X value) {
 						if (key == EXPRESSION_KEY) {
-							expr = EXPRESSION_KEY.cast(value);
+							super.setData(key(), EXPRESSION_KEY.cast(value));
 						}
 					}
 				}));
@@ -65,22 +59,16 @@ public final class OperatorService {
 					public boolean matches(String t) {
 						return t.indexOf('(') < 0;
 					}
-				}, new Getter<InfixNoParenProcessor>() {
-					private String expr;
-
+				}, new SimpleGetter<InfixNoParenProcessor, String>() {
 					@Override
-					public InfixNoParenProcessor get() {
-						if (expr == null) {
-							throw new IllegalStateException(
-									"must set the expression");
-						}
-						return new InfixNoParenProcessor(expr);
+					protected InfixNoParenProcessor doGet() {
+						return new InfixNoParenProcessor(getARG());
 					}
 
 					@Override
 					public <X> void setData(GetterKey<X> key, X value) {
 						if (key == EXPRESSION_KEY) {
-							expr = EXPRESSION_KEY.cast(value);
+							super.setData(key(), EXPRESSION_KEY.cast(value));
 						}
 					}
 				}));
