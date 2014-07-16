@@ -9,16 +9,16 @@ import com.techshroom.tscore.util.MatchChecker;
 import com.techshroom.tscore.util.SimpleGetter;
 import com.techshroom.tscore.util.SimpleMatchCheckAndGet;
 
-public final class OperatorService {
+public final class ExpressionParseProvider {
 	public static final GetterKey<String> EXPRESSION_KEY = new GetterKey<String>(
 			"expr");
-	private static final List<MatchCheckAndGet<String, ? extends OperatorProcessor>> factories = new ArrayList<MatchCheckAndGet<String, ? extends OperatorProcessor>>();
+	private static final List<MatchCheckAndGet<String, ? extends ExpressionProcessor>> factories = new ArrayList<MatchCheckAndGet<String, ? extends ExpressionProcessor>>();
 
-	private OperatorService() {
+	private ExpressionParseProvider() {
 	}
 
-	public static OperatorProcessor processorFor(String expression) {
-		for (MatchCheckAndGet<String, ? extends OperatorProcessor> fact : factories) {
+	public static ExpressionProcessor processorFor(String expression) {
+		for (MatchCheckAndGet<String, ? extends ExpressionProcessor> fact : factories) {
 			if (fact.matches(expression)) {
 				fact.setData(EXPRESSION_KEY, expression);
 				return fact.get();
@@ -27,23 +27,23 @@ public final class OperatorService {
 		return null;
 	}
 
-	public static <T extends OperatorProcessor> void registerOperator(
+	public static <T extends ExpressionProcessor> void registerProcessor(
 			MatchCheckAndGet<String, T> factory) {
 		factories.add(factory);
 	}
 
 	static {
 		// our procs
-		registerOperator(new SimpleMatchCheckAndGet<String, InfixParenProcessor>(
+		registerProcessor(new SimpleMatchCheckAndGet<String, InfixProcessor>(
 				new MatchChecker<String>() {
 					@Override
 					public boolean matches(String t) {
-						return t.indexOf('(') >= 0;
+						return /* TODO: detect diff btwn post/in fix */true;
 					}
-				}, new SimpleGetter<InfixParenProcessor, String>() {
+				}, new SimpleGetter<InfixProcessor, String>() {
 					@Override
-					protected InfixParenProcessor doGet() {
-						return new InfixParenProcessor(getARG());
+					protected InfixProcessor doGet() {
+						return new InfixProcessor(getARG());
 					}
 
 					@Override
@@ -53,16 +53,16 @@ public final class OperatorService {
 						}
 					}
 				}));
-		registerOperator(new SimpleMatchCheckAndGet<String, InfixNoParenProcessor>(
+		registerProcessor(new SimpleMatchCheckAndGet<String, PostfixProcessor>(
 				new MatchChecker<String>() {
 					@Override
 					public boolean matches(String t) {
-						return t.indexOf('(') < 0;
+						return /* TODO: detect diff btwn post/in fix */false;
 					}
-				}, new SimpleGetter<InfixNoParenProcessor, String>() {
+				}, new SimpleGetter<PostfixProcessor, String>() {
 					@Override
-					protected InfixNoParenProcessor doGet() {
-						return new InfixNoParenProcessor(getARG());
+					protected PostfixProcessor doGet() {
+						return new PostfixProcessor(getARG());
 					}
 
 					@Override
