@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.techshroom.tscore.util.QuickStringBuilder;
+
 public final class Operator {
 	private static final class OperatorLookupKey {
 		private final Associativeness assoc;
@@ -37,9 +39,8 @@ public final class Operator {
 
 		@Override
 		public String toString() {
-			return new StringBuilder("OpKey<").append(token).append(':')
-					.append(assoc).append(',').append(priority).append(">")
-					.toString();
+			return QuickStringBuilder.build("OpKey<", "token=", token,
+					",associativeness=", assoc, ",priority=", priority, ">");
 		}
 	}
 
@@ -124,12 +125,12 @@ public final class Operator {
 
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return ourKey.hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return ourKey.token;

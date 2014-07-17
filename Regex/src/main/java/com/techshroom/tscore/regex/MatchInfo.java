@@ -1,5 +1,9 @@
 package com.techshroom.tscore.regex;
 
+import java.util.Arrays;
+
+import com.techshroom.tscore.util.QuickStringBuilder;
+
 public final class MatchInfo {
 	public static final MatchInfo create(String match, String[] groups,
 			int start, int end, int group) {
@@ -37,9 +41,11 @@ public final class MatchInfo {
 	public String[] getGroups() {
 		return groups;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "";
+		return QuickStringBuilder.build("MatchInfo<", "match=", match,
+				",start=", start, ",end=", end, ",group=", group, ",groups[]=",
+				Arrays.toString(groups), ">");
 	}
 }
