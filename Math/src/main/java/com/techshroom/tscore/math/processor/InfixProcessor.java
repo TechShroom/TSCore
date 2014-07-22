@@ -1,4 +1,4 @@
-package com.techshroom.tscore.math;
+package com.techshroom.tscore.math.processor;
 
 import java.math.BigDecimal;
 

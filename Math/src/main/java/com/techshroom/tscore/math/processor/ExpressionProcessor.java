@@ -1,4 +1,4 @@
-package com.techshroom.tscore.math;
+package com.techshroom.tscore.math.processor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -105,6 +105,10 @@ public abstract class ExpressionProcessor {
 			}
 		}
 
+		for (MatchInfo opMatch : opMatches) {
+			System.err.println(opMatch);
+		}
+		
 		// by this point there are some functions or operators to work with
 		if (numMatches.get(0).getStart() == 0) {
 			// number first, which implies operator first
@@ -113,6 +117,10 @@ public abstract class ExpressionProcessor {
 			Operator check = Operator.getOperator(firstOp.getMatch());
 			// push a number
 			tokens.add(numMatches.get(0).getMatch());
+			tokens.add(check.toString());
+			if (numMatches.get(1).getStart() == firstOp.getEnd()) {
+				
+			}
 		}
 	}
 
