@@ -258,7 +258,6 @@ public final class Maths {
 						/ ((4 * Value) % (doubleCircleSize) - circleSize);
 			}
 			return lookup(k) / lookup(k + 262144);
-
 		}
 	}
 
