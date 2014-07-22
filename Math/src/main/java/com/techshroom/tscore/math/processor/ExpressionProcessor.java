@@ -1,10 +1,13 @@
 package com.techshroom.tscore.math.processor;
 
+import static com.techshroom.tscore.math.processor.RegexPatterns.FUNCTION_GET_REGEX;
+import static com.techshroom.tscore.math.processor.RegexPatterns.NUMBER_REGEX;
+import static com.techshroom.tscore.math.processor.RegexPatterns.OPERATOR_GET_REGEX;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
@@ -13,53 +16,6 @@ import com.techshroom.tscore.regex.MatchInfo;
 import com.techshroom.tscore.regex.MatchList;
 
 public abstract class ExpressionProcessor {
-	/**
-	 * Regex to find any numbers in a string.<br>
-	 * <br>
-	 * 
-	 * <code>REGEX=([-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)</code>
-	 */
-	protected static final Pattern NUMBER_REGEX = Pattern
-			.compile(RegexBits.NUMBER_BASE);
-	/**
-	 * Regex to validate functions.<br>
-	 * <br>
-	 * 
-	 * <code>REGEX=(([a-zA-Z][a-zA-Z0-9]*)\(((?:@[a-zA-Z][a-zA-Z0-9]*)?(?:,\s*(?:@[a-zA-Z][a-zA-Z0-9]*))*)\))</code>
-	 */
-	public static final Pattern FUNCTION_VALIDATE_REGEX = Pattern.compile("("
-			+ RegexBits.FUNCTION + RegexBits.OPTSPACE + "\\(("
-			+ RegexBits.OPTSPACE + RegexBits.VARIABLE + "?(?:"
-			+ RegexBits.OPTSPACE + "," + RegexBits.OPTSPACE
-			+ RegexBits.VARIABLE + ")*)" + RegexBits.OPTSPACE + "\\))");
-	/**
-	 * Regex to find functions.<br>
-	 * <br>
-	 * 
-	 * <code>REGEX=(([a-zA-Z][a-zA-Z0-9]*)\(((?:([-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?))?(?:,\s*(?:([-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?)))*)\))</code>
-	 */
-	public static final Pattern FUNCTION_GET_REGEX = Pattern.compile("("
-			+ RegexBits.FUNCTION + RegexBits.OPTSPACE + "\\(("
-			+ RegexBits.OPTSPACE + RegexBits.NUMBER_BASE + "?(?:"
-			+ RegexBits.OPTSPACE + "," + RegexBits.OPTSPACE
-			+ RegexBits.NUMBER_BASE + ")*)" + RegexBits.OPTSPACE + "\\))");
-	/**
-	 * Regex to validate operators.<br>
-	 * <br>
-	 * 
-	 * <code>REGEX=(((?:@[a-zA-Z][a-zA-Z0-9]*))?[^a-zA-Z0-9]((?:@[a-zA-Z][a-zA-Z0-9]*))?)</code>
-	 */
-	public static final Pattern OPERATOR_VALIDATE_REGEX = Pattern.compile("(("
-			+ RegexBits.VARIABLE + ")?" + RegexBits.OPERATOR + "("
-			+ RegexBits.VARIABLE + ")?)");
-	/**
-	 * Regex to get operators.<br>
-	 * <br>
-	 * 
-	 * <code>REGEX=([^a-zA-Z0-9])</code>
-	 */
-	public static final Pattern OPERATOR_GET_REGEX = Pattern.compile("("
-			+ RegexBits.OPERATOR + ")");
 	protected final String processing;
 	protected final List<String> tokens = new ArrayList<String>();
 
@@ -108,7 +64,7 @@ public abstract class ExpressionProcessor {
 		for (MatchInfo opMatch : opMatches) {
 			System.err.println(opMatch);
 		}
-		
+
 		// by this point there are some functions or operators to work with
 		if (numMatches.get(0).getStart() == 0) {
 			// number first, which implies operator first
@@ -119,7 +75,8 @@ public abstract class ExpressionProcessor {
 			tokens.add(numMatches.get(0).getMatch());
 			tokens.add(check.toString());
 			if (numMatches.get(1).getStart() == firstOp.getEnd()) {
-				
+				// not function
+				tokens.add(numMatches.get(1).getMatch());
 			}
 		}
 	}
