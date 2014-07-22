@@ -1,12 +1,10 @@
 package com.techshroom.tscore.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.techshroom.tscore.util.stepbuilder.FinalStep;
-import com.techshroom.tscore.util.stepbuilder.OneArgStep;
-import com.techshroom.tscore.util.stepbuilder.StepBuilder;
+import com.techshroom.tscore.util.stepbuilder.*;
 
 /**
  * A class example for the <code>util.stepbuilder</code> package.

@@ -1,8 +1,6 @@
 package com.techshroom.tscore.math.processor;
 
-import static com.techshroom.tscore.math.processor.RegexPatterns.FUNCTION_GET_REGEX;
-import static com.techshroom.tscore.math.processor.RegexPatterns.NUMBER_REGEX;
-import static com.techshroom.tscore.math.processor.RegexPatterns.OPERATOR_GET_REGEX;
+import static com.techshroom.tscore.math.processor.RegexPatterns.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

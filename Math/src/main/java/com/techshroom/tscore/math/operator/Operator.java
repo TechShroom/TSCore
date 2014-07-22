@@ -1,8 +1,6 @@
 package com.techshroom.tscore.math.operator;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.techshroom.tscore.util.QuickStringBuilder;
 

@@ -1,6 +1,6 @@
 package com.techshroom.tscore.math;
 
-import static com.techshroom.tscore.math.BIMath.lessThan;
+import static com.techshroom.tscore.math.BIMath.*;
 
 import java.math.BigInteger;
 

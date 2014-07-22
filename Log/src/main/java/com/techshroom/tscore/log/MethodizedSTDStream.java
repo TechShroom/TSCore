@@ -1,8 +1,6 @@
 package com.techshroom.tscore.log;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.regex.Matcher;

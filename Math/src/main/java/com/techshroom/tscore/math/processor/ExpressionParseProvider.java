@@ -3,11 +3,7 @@ package com.techshroom.tscore.math.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.techshroom.tscore.util.GetterKey;
-import com.techshroom.tscore.util.MatchCheckAndGet;
-import com.techshroom.tscore.util.MatchChecker;
-import com.techshroom.tscore.util.SimpleGetter;
-import com.techshroom.tscore.util.SimpleMatchCheckAndGet;
+import com.techshroom.tscore.util.*;
 
 public final class ExpressionParseProvider {
 	public static final GetterKey<String> EXPRESSION_KEY = new GetterKey<String>(
