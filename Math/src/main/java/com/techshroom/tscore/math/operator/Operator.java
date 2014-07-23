@@ -131,6 +131,6 @@ public final class Operator {
 
 	@Override
 	public String toString() {
-		return ourKey.token;
+		return ourKey.token.replace("OpKey", "Operator");
 	}
 }
