@@ -15,22 +15,9 @@ public class MatchList extends AbstractList<MatchInfo> {
 	private void generate() {
 		List<MatchInfo> storage = new ArrayList<MatchInfo>();
 		while (match.find()) {
-			String lock = match.group();
-			int start = match.start();
-			int end = match.end();
-			String[] groups = grabGroups();
-			storage.add(MatchInfo.create(lock, groups, start, end,
-					storage.size()));
+			storage.add(MatchInfo.saveState(match, storage.size()));
 		}
 		generated = storage.toArray(generated);
-	}
-
-	private String[] grabGroups() {
-		String[] ret = new String[match.groupCount()];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = match.group(i);
-		}
-		return ret;
 	}
 
 	@Override

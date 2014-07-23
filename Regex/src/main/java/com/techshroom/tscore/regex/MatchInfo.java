@@ -1,6 +1,7 @@
 package com.techshroom.tscore.regex;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
 
 import com.techshroom.tscore.util.QuickStringBuilder;
 
@@ -8,6 +9,26 @@ public final class MatchInfo {
 	public static final MatchInfo create(String match, String[] groups,
 			int start, int end, int group) {
 		return new MatchInfo(match, groups, start, end, group);
+	}
+
+	public static final MatchInfo saveState(Matcher match) {
+		return saveState(match, -1);
+	}
+
+	public static final MatchInfo saveState(Matcher match, int index) {
+		String lock = match.group();
+		int start = match.start();
+		int end = match.end();
+		String[] groups = grabGroups(match);
+		return create(lock, groups, start, end, index);
+	}
+
+	private static String[] grabGroups(Matcher match) {
+		String[] ret = new String[match.groupCount()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = match.group(i);
+		}
+		return ret;
 	}
 
 	private final String match;
