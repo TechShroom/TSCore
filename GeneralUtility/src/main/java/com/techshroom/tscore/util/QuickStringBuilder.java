@@ -13,7 +13,13 @@ public final class QuickStringBuilder {
 	public static final String build(Object... args) {
 		StringBuilder sb = new StringBuilder();
 		for (Object o : args) {
+			if (o instanceof String) {
+				sb.append("'");
+			}
 			sb.append(o);
+			if (o instanceof String) {
+				sb.append("'");
+			}
 		}
 		return sb.toString();
 	}
