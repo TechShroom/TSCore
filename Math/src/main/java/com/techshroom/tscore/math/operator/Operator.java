@@ -6,11 +6,14 @@ import com.techshroom.tscore.util.QuickStringBuilder;
 
 public final class Operator {
 	private static final class OperatorLookupKey {
+		private final NumberPlacement placement;
 		private final Associativeness assoc;
 		private final int priority;
 		private final String token;
 
-		private OperatorLookupKey(Associativeness assc, int pri, String tkn) {
+		private OperatorLookupKey(NumberPlacement plcmnt, Associativeness assc,
+				int pri, String tkn) {
+			placement = plcmnt;
 			assoc = assc;
 			priority = pri;
 			token = tkn;
@@ -23,8 +26,8 @@ public final class Operator {
 			}
 			if (obj instanceof OperatorLookupKey) {
 				OperatorLookupKey olk = (OperatorLookupKey) obj;
-				//
-				return olk.priority == priority && olk.assoc == assoc
+				return olk.placement == placement && olk.priority == priority
+						&& olk.assoc == assoc
 						&& token.equalsIgnoreCase(olk.token);
 			}
 			return false;
@@ -32,18 +35,54 @@ public final class Operator {
 
 		@Override
 		public int hashCode() {
-			return assoc.hashCode() / (priority / token.hashCode());
+			return placement.hashCode() + assoc.hashCode()
+					/ (priority / token.hashCode());
 		}
 
 		@Override
 		public String toString() {
-			return QuickStringBuilder.build("OpKey<", "token=", token,
-					",associativeness=", assoc, ",priority=", priority, ">");
+			return QuickStringBuilder.build("OpKey<", "placement=", placement,
+					",token=", token, ",associativeness=", assoc, ",priority=",
+					priority, ">");
+		}
+	}
+
+	private static final class TknAndPlaceKey {
+		private final NumberPlacement placement;
+		private final String token;
+
+		private TknAndPlaceKey(NumberPlacement plcmnt, String tkn) {
+			placement = plcmnt;
+			token = tkn;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj instanceof OperatorLookupKey) {
+				OperatorLookupKey olk = (OperatorLookupKey) obj;
+				return olk.placement == placement
+						&& token.equalsIgnoreCase(olk.token);
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return placement.hashCode() + token.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return QuickStringBuilder.build("OpKey2<", "placement=", placement,
+					",token=", token, ">");
 		}
 	}
 
 	private static final Map<OperatorLookupKey, Operator> lookups = new HashMap<OperatorLookupKey, Operator>();
-	private static final Map<String, Operator> tokenLookups = new HashMap<String, Operator>();
+	private static final Map<TknAndPlaceKey, Operator> tokenLookups = new HashMap<TknAndPlaceKey, Operator>();
 
 	public static final Comparator<Operator> ASSOC_COMPARATOR = new Comparator<Operator>() {
 		@Override
@@ -65,9 +104,11 @@ public final class Operator {
 	};
 
 	public static Operator registerOrGetOperator(String token, int prio,
-			Associativeness assoc) {
-		OperatorLookupKey target = new OperatorLookupKey(assoc, prio, token);
-		Operator o = getOperator(token);
+			Associativeness assoc, NumberPlacement placement) {
+		OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
+				prio, token);
+		TknAndPlaceKey otherTarget = new TknAndPlaceKey(placement, token);
+		Operator o = getOperator(token, placement);
 		if (o != null) {
 			OperatorLookupKey olk = o.ourKey;
 			if (olk.equals(target)) {
@@ -88,6 +129,7 @@ public final class Operator {
 						.append(olk.assoc).append(" was ").append(target.assoc)
 						.append(")");
 			} else {
+				// NB: placement isn't handled because it is different.
 				sb.append("an unknown error occured");
 			}
 			throw new IllegalArgumentException(sb.toString());
@@ -96,12 +138,13 @@ public final class Operator {
 		// no operator yet: define it
 		o = new Operator(target);
 		lookups.put(target, o);
-		tokenLookups.put(token, o);
-		return getOperator(token);
+		tokenLookups.put(otherTarget, o);
+		return getOperator(token, placement);
 	}
 
-	public static Operator getOperator(String token) {
-		return tokenLookups.get(token);
+	public static Operator getOperator(String token,
+			NumberPlacement requestedPlacement) {
+		return tokenLookups.get(new TknAndPlaceKey(requestedPlacement, token));
 	}
 
 	private final OperatorLookupKey ourKey;
