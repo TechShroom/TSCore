@@ -22,6 +22,9 @@ apply from: 'github.gradle', to: project
 def subdeps = [:]
 def submvn = [:]
 
+def testsubdeps = [:]
+def testsubmvn = [:]
+
 File[] dirList(String dir) {
     file(dir).listFiles({file -> file.isDirectory() && !file.getName().startsWith(".")} as FileFilter).sort()
 }
@@ -35,6 +38,8 @@ void add(item, value) {
 dirList(".").each{
     subdeps[it.getName()] = []
     submvn[it.getName()] = []
+    testsubdeps[it.getName()] = ["Log"]
+    testsubmvn[it.getName()] = ["junit.junit.4+"]
 }
 
 subdeps["Math"] += "GeneralUtility"
@@ -83,8 +88,14 @@ subprojects {
         subdeps[name].each{
             compile project(":$it")
         }
+        
+        testsubmvn[name].each{
+            testCompile "$it"
+        }
 
-        testCompile group: 'junit', name: 'junit', version: '4.+'
+        testsubdeps[name].each{
+            testCompile project(":$it")
+        }
     }
 
     println '=== Complete ==='
