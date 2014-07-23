@@ -39,7 +39,7 @@ dirList(".").each{
     subdeps[it.getName()] = []
     submvn[it.getName()] = []
     testsubdeps[it.getName()] = ["Log"]
-    testsubmvn[it.getName()] = ["junit.junit.4+"]
+    testsubmvn[it.getName()] = ["junit:junit:4+"]
 }
 
 subdeps["Math"] += "GeneralUtility"
