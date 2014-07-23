@@ -13,11 +13,19 @@ public class EvalException extends RuntimeException {
 		/**
 		 * No operator found. Args: [operator]
 		 */
-		MISSING_OPERATOR("No such operator %s"),
+		NO_SUCH_OPERATOR("No such operator %s"),
 		/**
 		 * No function found. Args: [function_name]
 		 */
-		MISSING_FUNCTION("No such function %s"),
+		NO_SUCH_FUNCTION("No such function %s"),
+		/**
+		 * Needed an operator. Args: []
+		 */
+		NEEDED_OPERATOR("Needed an operator."),
+		/**
+		 * Needed a function. Args: []
+		 */
+		NEEDED_FUNCTION("Needed a function."),
 		/**
 		 * Unexpected error. Args: [expected_char, index_or_str]
 		 */
