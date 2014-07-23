@@ -7,7 +7,7 @@ public final class RegexPatterns {
 	 * Regex to find any numbers in a string.<br>
 	 * <br>
 	 * 
-	 * <code>REGEX=([-+]?[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?)</code>
+	 * <code>REGEX=([-+]?\d+(\.\d+)?([eE][-+]?\d+)?)</code>
 	 */
 	protected static final Pattern NUMBER_REGEX = Pattern
 			.compile(RegexBits.NUMBER_BASE);
@@ -26,7 +26,7 @@ public final class RegexPatterns {
 	 * Regex to find functions.<br>
 	 * <br>
 	 * 
-	 * <code>REGEX=(([a-zA-Z][a-zA-Z0-9]*)\(((?:([-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?))?(?:,\s*(?:([-+]?\\d+(\\.\\d+)?([eE][-+]?\\d+)?)))*)\))</code>
+	 * <code>REGEX=(([a-zA-Z][a-zA-Z0-9]*)\(((?:([-+]?\\d+(\.\d+)?([eE][-+]?\d+)?))?(?:,\s*(?:([-+]?\\d+(\.\d+)?([eE][-+]?\\d+)?)))*)\))</code>
 	 */
 	public static final Pattern FUNCTION_GET_REGEX = Pattern.compile("("
 			+ RegexBits.FUNCTION + RegexBits.OPTSPACE + "\\(("
