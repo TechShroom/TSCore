@@ -5,5 +5,5 @@ package com.techshroom.tscore.util.stepbuilder;
  * final step, how else should it proceed?
  */
 public interface FinalStep<RES> extends Step<RES, FinalStep<RES>> {
-	RES build();
+    RES build();
 }

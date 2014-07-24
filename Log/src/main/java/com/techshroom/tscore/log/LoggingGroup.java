@@ -26,50 +26,50 @@ import org.apache.logging.log4j.Level;
  * </dl>
  */
 public enum LoggingGroup {
-	/**
-	 * Standard output for users; etc.
-	 */
-	INFO(Level.INFO),
-	/**
-	 * Suggestions for performance
-	 */
-	SUGGESTIONS(Level.WARN),
-	/**
-	 * Non-fatal errors
-	 */
-	WARNING(Level.ERROR),
-	/**
-	 * Fatal errors
-	 */
-	ERROR(Level.FATAL),
-	/**
-	 * Debug output for developing
-	 */
-	DEBUG(Level.DEBUG),
-	/**
-	 * Dump group for unloading tons of data
-	 */
-	JUNK(Level.TRACE);
+    /**
+     * Standard output for users; etc.
+     */
+    INFO(Level.INFO),
+    /**
+     * Suggestions for performance
+     */
+    SUGGESTIONS(Level.WARN),
+    /**
+     * Non-fatal errors
+     */
+    WARNING(Level.ERROR),
+    /**
+     * Fatal errors
+     */
+    ERROR(Level.FATAL),
+    /**
+     * Debug output for developing
+     */
+    DEBUG(Level.DEBUG),
+    /**
+     * Dump group for unloading tons of data
+     */
+    JUNK(Level.TRACE);
 
-	public static final Set<LoggingGroup> ALL = EnumSet
-			.allOf(LoggingGroup.class);
+    public static final Set<LoggingGroup> ALL = EnumSet
+            .allOf(LoggingGroup.class);
 
-	private static final Map<Level, LoggingGroup> valueToLevel = new HashMap<Level, LoggingGroup>();
+    private static final Map<Level, LoggingGroup> valueToLevel = new HashMap<Level, LoggingGroup>();
 
-	static {
-		for (LoggingGroup lg : values()) {
-			Level al = lg.LEVEL;
-			valueToLevel.put(al, lg);
-		}
-	}
+    static {
+        for (LoggingGroup lg : values()) {
+            Level al = lg.LEVEL;
+            valueToLevel.put(al, lg);
+        }
+    }
 
-	public static final LoggingGroup lookupLevel(Level value) {
-		return valueToLevel.get(value);
-	}
+    public static final LoggingGroup lookupLevel(Level value) {
+        return valueToLevel.get(value);
+    }
 
-	public final Level LEVEL;
+    public final Level LEVEL;
 
-	private LoggingGroup(Level level) {
-		LEVEL = level;
-	}
+    private LoggingGroup(Level level) {
+        LEVEL = level;
+    }
 }
