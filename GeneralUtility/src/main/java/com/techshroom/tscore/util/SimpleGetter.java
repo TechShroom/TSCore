@@ -13,6 +13,7 @@ public abstract class SimpleGetter<T, ARG> implements Getter<T> {
         }
     }
 
+    @Override
     public final T get() {
         if (!argSetFlag) {
             handleUnsetArg();

@@ -20,10 +20,10 @@ public final class RegexPatterns {
      * Regex to find functions.
      * */
     public static final Pattern FUNCTION_GET_REGEX = Pattern.compile("("
-            + RegexBits.FUNCTION + RegexBits.OPTSPACE + "\\(("
+            + RegexBits.FUNCTION + RegexBits.OPTSPACE + "(?=\\(("
             + RegexBits.OPTSPACE + RegexBits.NUMBER_BASE + "?(?:"
             + RegexBits.OPTSPACE + "," + RegexBits.OPTSPACE
-            + RegexBits.NUMBER_BASE + ")*)" + RegexBits.OPTSPACE + "\\))");
+            + RegexBits.NUMBER_BASE + ")*)" + RegexBits.OPTSPACE + "\\)))");
     /**
      * Regex to get operators.
      */

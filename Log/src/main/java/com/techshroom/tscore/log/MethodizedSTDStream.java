@@ -54,14 +54,15 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
         }
     }
 
-    private String replaceAllButLast(String str, String check, String replace) {
+    private static String replaceAllButLast(String str, String check,
+            String replace) {
         String out = "";
         String sub = str.replaceAll(check + "$", "");
         out = str.replace(sub, sub.replaceAll(check, replace));
         return out;
     }
 
-    private String getMethod() {
+    private static String getMethod() {
 
         StackTraceElement[] ste = new Throwable().getStackTrace();
 

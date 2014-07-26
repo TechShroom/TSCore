@@ -1,29 +1,29 @@
 package com.techshroom.tscore.regex;
 
-import java.util.Arrays;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
 import com.techshroom.tscore.util.QuickStringBuilder;
 
 public final class MatchInfo {
-    public static final MatchInfo create(String match, String[] groups,
-            int start, int end, int group) {
-        return new MatchInfo(match, groups, start, end, group);
+
+    public static final MatchInfo saveState(MatchResult match, boolean matched) {
+        return saveState(match, matched, -1);
     }
 
-    public static final MatchInfo saveState(Matcher match) {
-        return saveState(match, -1);
+    public static final MatchInfo saveState(MatchResult match, boolean matched,
+            int index) {
+        MatchResult m = match;
+        if (m instanceof Matcher) {
+            m = ((Matcher) match).toMatchResult();
+        }
+        return new MatchInfo(m, index, matched);
     }
 
-    public static final MatchInfo saveState(Matcher match, int index) {
-        String lock = match.group();
-        int start = match.start();
-        int end = match.end();
-        String[] groups = grabGroups(match);
-        return create(lock, groups, start, end, index);
-    }
-
-    private static String[] grabGroups(Matcher match) {
+    private static String[] grabGroups(MatchResult match) {
+        if (!success(match)) {
+            return new String[] {};
+        }
         String[] ret = new String[match.groupCount()];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = match.group(i);
@@ -31,42 +31,56 @@ public final class MatchInfo {
         return ret;
     }
 
-    private final String match;
-    private final String[] groups;
-    private final int start, end, group;
+    private static boolean success(MatchResult m) {
+        try {
+            m.start();
+        } catch (IllegalStateException e) {
+            return false;
+        }
+        return true;
+    }
 
-    private MatchInfo(String mtch, String[] grps, int st, int en, int grp) {
-        match = mtch;
-        start = st;
-        end = en;
-        group = grp;
-        groups = grps;
+    private final String[] groups;
+    private final MatchResult pair;
+    private final int index;
+    private final boolean success;
+
+    private MatchInfo(MatchResult wrap, int ind, boolean s) {
+        groups = grabGroups(wrap);
+        pair = wrap;
+        index = ind;
+        success = s;
     }
 
     public String getMatch() {
-        return match;
+        return pair.group();
     }
 
     public int getStart() {
-        return start;
+        return pair.start();
     }
 
     public int getEnd() {
-        return end;
+        return pair.end();
     }
 
-    public int getGroup() {
-        return group;
+    public int getIndex() {
+        return index;
     }
 
     public String[] getGroups() {
         return groups;
     }
 
+    public boolean hasMatch() {
+        return success;
+    }
+
+    @SuppressWarnings("boxing")
     @Override
     public String toString() {
-        return QuickStringBuilder.build("MatchInfo<", "match=", match,
-                ",start=", start, ",end=", end, ",group=", group, ",groups[]=",
-                Arrays.toString(groups), ">");
+        return QuickStringBuilder.build("MatchInfo<", "match=", getMatch(),
+                ",start=", getStart(), ",end=", getEnd(), ",index=", index,
+                ",groups[]=", groups, ">");
     }
 }

@@ -34,6 +34,7 @@ public class StepExample {
         assertEquals(build.getMessage(), MESSAGE_VALUE);
     }
 
+    @SuppressWarnings("hiding")
     public static final class Build {
         private final int a, b, c, d;
         private final String message;

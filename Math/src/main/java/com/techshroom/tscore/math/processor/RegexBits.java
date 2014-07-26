@@ -18,7 +18,7 @@ public final class RegexBits {
     /**
      * Number finder (float). Includes `E` matching and negative numbers.
      */
-    public static final String NUMBER_BASE = "(([-+]?\\d+(?:\\.\\d+)?)"
+    public static final String NUMBER_BASE = "((\\d+(?:\\.\\d+)?)"
             + "(?:[eE]([-+]?\\d+))?)";
     /**
      * Operator regex to find just the operator

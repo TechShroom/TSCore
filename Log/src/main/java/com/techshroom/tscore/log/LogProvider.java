@@ -27,7 +27,7 @@ public final class LogProvider {
     }
 
     public static void init() {
-
+        // does nothing
     }
 
     public static void overrideSTDStreams() {

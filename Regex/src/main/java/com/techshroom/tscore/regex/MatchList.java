@@ -15,7 +15,7 @@ public class MatchList extends AbstractList<MatchInfo> {
     private void generate() {
         List<MatchInfo> storage = new ArrayList<MatchInfo>();
         while (match.find()) {
-            storage.add(MatchInfo.saveState(match, storage.size()));
+            storage.add(MatchInfo.saveState(match, true, storage.size()));
         }
         generated = storage.toArray(generated);
     }

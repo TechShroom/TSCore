@@ -11,6 +11,7 @@ public final class GetterKey<T> implements UncheckedCaster<T> {
         return name;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T cast(Object o) {
         return (T) o;

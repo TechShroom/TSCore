@@ -37,7 +37,11 @@ public class EvalException extends RuntimeException {
         /**
          * Function failed during processing. Args: [function_name]
          */
-        FUNCTION_ERROR("Function %s threw an error while being processed");
+        FUNCTION_ERROR("Function %s threw an error while being processed"),
+        /**
+         * Unknown error. Args: [message]
+         */
+        UKNOWN_ERROR("Unknown error %s");
 
         private final String message;
 
@@ -57,6 +61,10 @@ public class EvalException extends RuntimeException {
     private static final long serialVersionUID = -987635654396074492L;
 
     private final Reason reason;
+
+    public EvalException(String message) {
+        this(Reason.UKNOWN_ERROR, message);
+    }
 
     public EvalException(Reason r) {
         super(r.unformmated());

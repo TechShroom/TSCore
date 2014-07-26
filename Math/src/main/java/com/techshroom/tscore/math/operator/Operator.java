@@ -1,6 +1,7 @@
 package com.techshroom.tscore.math.operator;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import com.techshroom.tscore.util.QuickStringBuilder;
@@ -40,6 +41,7 @@ public final class Operator {
                     / (priority / token.hashCode());
         }
 
+        @SuppressWarnings("boxing")
         @Override
         public String toString() {
             return QuickStringBuilder.build("OpKey<", "placement=", placement,
@@ -105,7 +107,8 @@ public final class Operator {
     };
 
     public static Operator registerOrGetOperator(String token, int prio,
-            Associativeness assoc, NumberPlacement placement) {
+            Associativeness assoc, NumberPlacement placement,
+            OperatorRunner runner) {
         OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
                 prio, token);
         TknAndPlaceKey otherTarget = new TknAndPlaceKey(placement, token);
@@ -137,7 +140,7 @@ public final class Operator {
         }
 
         // no operator yet: define it
-        o = new Operator(target);
+        o = new Operator(target, runner);
         lookups.put(target, o);
         tokenLookups.put(otherTarget, o);
         return getOperator(token, placement);
@@ -147,11 +150,126 @@ public final class Operator {
             NumberPlacement requestedPlacement) {
         return tokenLookups.get(new TknAndPlaceKey(requestedPlacement, token));
     }
+    
+    public static Operator[] operatersForToken(String token) {
+        Operator[] ops = new Operator[NumberPlacement.values().length];
+        NumberPlacement[] allPlacements = NumberPlacement.values();
+        for (int i = 0; i < allPlacements.length; i++) {
+            NumberPlacement np = allPlacements[i];
+            ops[i] = getOperator(token, np);
+        }
+        return ops;
+    }
 
     private final OperatorLookupKey ourKey;
 
-    private Operator(OperatorLookupKey key) {
+    private final OperatorRunner runner;
+
+    private Operator(OperatorLookupKey key, OperatorRunner or) {
         ourKey = key;
+        runner = or;
+    }
+
+    @SuppressWarnings("boxing")
+    public <T extends Number> T runTheNumbers(T... numbers) {
+        checkInputs(numbers);
+        // always at least one
+        T a = numbers[0];
+        Number theAnswer = null;
+        if (isLong(a.getClass())) {
+            theAnswer = runner.runLong(toLongs(numbers));
+        } else if (isDouble(a.getClass())) {
+            theAnswer = runner.runDouble(toDoubles(numbers));
+        } else if (isBigDec(a.getClass())) {
+            theAnswer = runner.runBigDec(toBigDec(numbers));
+        } else {
+            throw new UnsupportedOperationException("Unknown Number extender "
+                    + a.getClass());
+        }
+
+        Class<? extends Number> ac = a.getClass(), tc = theAnswer.getClass();
+
+        Number ret = null;
+        @SuppressWarnings("unchecked")
+        Class<T> tk = (Class<T>) numbers.getClass().getComponentType();
+
+        if (ac == tc) {
+            ret = theAnswer;
+        } else if (ac == Byte.class) {
+            ret = Byte.valueOf(theAnswer.byteValue());
+        } else if (ac == Short.class) {
+            ret = Short.valueOf(theAnswer.shortValue());
+        } else if (ac == Integer.class) {
+            ret = Integer.valueOf(theAnswer.intValue());
+        } else if (ac == Long.class) {
+            ret = Long.valueOf(theAnswer.longValue());
+        } else if (ac == Double.class) {
+            ret = Double.valueOf(theAnswer.doubleValue());
+        } else if (ac == Float.class) {
+            ret = Float.valueOf(theAnswer.floatValue());
+        } else if (ac == BigDecimal.class) {
+            if (tc == BigInteger.class) {
+                // avoid loss of bigint
+                ret = new BigDecimal((BigInteger) theAnswer);
+            } else {
+                ret = BigDecimal.valueOf(theAnswer.doubleValue());
+            }
+        } else if (ac == BigInteger.class) {
+            if (tc == BigDecimal.class) {
+                // avoid loss of bigdec
+                ret = ((BigDecimal) theAnswer).toBigInteger();
+            } else {
+                ret = BigInteger.valueOf(theAnswer.longValue());
+            }
+        } else {
+            System.err.println("[WARNING] Unaccounted for Number extender "
+                    + ac);
+        }
+        return tk.cast(ret);
+    }
+
+    private static boolean isLong(Class<? extends Number> a) {
+        return a == Integer.class || a == Long.class || a == Byte.class
+                || a == Short.class;
+    }
+
+    private static boolean isDouble(Class<? extends Number> a) {
+        return a == Double.class || a == Float.class;
+    }
+
+    private static boolean isBigDec(Class<? extends Number> a) {
+        return a == BigDecimal.class || a == BigInteger.class;
+    }
+
+    private static long[] toLongs(Number... numbers) {
+        long[] res = new long[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            res[i] = numbers[i].longValue();
+        }
+        return res;
+    }
+
+    private static double[] toDoubles(Number... numbers) {
+        double[] res = new double[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            res[i] = numbers[i].doubleValue();
+        }
+        return res;
+    }
+
+    private static BigDecimal[] toBigDec(Number... numbers) {
+        BigDecimal[] res = new BigDecimal[numbers.length];
+        for (int i = 0; i < numbers.length; i++) {
+            Number n = numbers[i];
+            if (n instanceof BigDecimal) {
+                res[i] = (BigDecimal) n;
+            } else if (n instanceof BigInteger) {
+                res[i] = new BigDecimal((BigInteger) n);
+            } else {
+                res[i] = BigDecimal.valueOf(n.doubleValue());
+            }
+        }
+        return res;
     }
 
     @Override
@@ -168,6 +286,10 @@ public final class Operator {
         return false;
     }
 
+    public int inputCount() {
+        return (ourKey.placement == NumberPlacement.BOTH) ? 2 : 1;
+    }
+
     @Override
     public int hashCode() {
         return ourKey.hashCode();
@@ -175,21 +297,41 @@ public final class Operator {
 
     @Override
     public String toString() {
-        return ourKey.token.replace("OpKey", "Operator");
+        return ourKey.token;
     }
 
     public String toString(Number... numbers) {
+        checkInputs(numbers);
         StringBuilder builder = new StringBuilder();
         switch (ourKey.placement) {
             case LEFT:
+                builder.append(numbers[0]);
+                builder.append(ourKey.token);
                 break;
             case RIGHT:
+                builder.append(ourKey.token);
+                builder.append(numbers[0]);
                 break;
             case BOTH:
+                builder.append(numbers[0]);
+                builder.append(ourKey.token);
+                builder.append(numbers[1]);
                 break;
             default:
+                builder.append("Failed on " + Arrays.toString(numbers)
+                        + " with placement " + ourKey.placement + " (we are "
+                        + toString() + ")");
                 break;
         }
         return builder.toString();
+    }
+
+    @SuppressWarnings("boxing")
+    private void checkInputs(Number[] in) {
+        if (in.length < inputCount()) {
+            throw new IllegalArgumentException("Not enough numbers for input "
+                    + QuickStringBuilder.build("(needed ", inputCount(),
+                            ", got ", in.length, ")"));
+        }
     }
 }
