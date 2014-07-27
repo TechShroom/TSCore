@@ -41,19 +41,24 @@ public class ParsingTest {
     @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
     public void malformedSineA() {
-        assertThat("sin 90)", BigDecimal.valueOf(1));
+        assertThatWillFail("sin 90)", BigDecimal.valueOf(1));
     }
 
     @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
     public void malformedSineB() {
-        assertThat("sin(90", BigDecimal.valueOf(1));
+        assertThatWillFail("sin(90", BigDecimal.valueOf(1));
     }
 
     @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
     public void malformedSineC() {
-        assertThat("sin 90", BigDecimal.valueOf(1));
+        assertThatWillFail("sin 90", BigDecimal.valueOf(1));
+    }
+
+    private static void assertThatWillFail(String expr, BigDecimal eq) {
+        System.err.print(expr + " should be invalid; ");
+        assertThat(expr, eq);
     }
 
     private static void assertThat(String expr, BigDecimal eq) {

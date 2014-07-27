@@ -21,7 +21,8 @@ public class InfixProcessor extends ExpressionProcessor {
     @Override
     public BigDecimal process() {
         callTokenize();
-        return null;
+        System.err.println(worker.output + " from " + Thread.currentThread());
+        return BigDecimal.ZERO;
     }
 
     @Override
@@ -40,6 +41,7 @@ public class InfixProcessor extends ExpressionProcessor {
         private final LinkedList<Token> output;
         private final LinkedList<Token> operators;
         private final LinkedList<List<Token>> listOfBuildingList;
+        private String argument;
 
         private TokenProc() {
             output = new LinkedList<Token>();
@@ -59,6 +61,7 @@ public class InfixProcessor extends ExpressionProcessor {
                     // only functions wait for (, it is otherwise "unexpected"
                     state = State.BUILDING_COMMA_LIST;
                     listOfBuildingList.push(new ArrayList<Token>());
+                    argument = "";
                 } else {
                     throw new EvalException(Reason.PARSE_ERROR, "(", "after "
                             + passToken.value() + "; before " + t.value());
@@ -70,10 +73,18 @@ public class InfixProcessor extends ExpressionProcessor {
                 // this is sort of a waiting for R_PAREN state
                 // but we are also building a list.
                 if (t.value().equals(")")) {
+                    finishedMakingArgument();
                     // list over, man
                     output.push(new ListToken(listOfBuildingList.pop()));
+                    return;
                 } else if (t.value().equals(",")) {
-                    
+                    finishedMakingArgument();
+                } else {
+                    argument += t.value();
+                }
+
+                if (listOfBuildingList.isEmpty()) {
+                    state = State.DEFAULT;
                 }
             }
 
@@ -87,5 +98,32 @@ public class InfixProcessor extends ExpressionProcessor {
                 passToken = t;
             }
         }
+
+        private void finishedMakingArgument() {
+            BigDecimal argumentValue = evalWithNoStackProblems(argument);
+            listOfBuildingList.peek().add(new NumberToken(argumentValue));
+        }
+    }
+
+    private volatile BigDecimal __evalResult;
+
+    private BigDecimal evalWithNoStackProblems(final String s) {
+        Thread t = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                __evalResult = new InfixProcessor(s).process();
+            }
+        });
+        t.start();
+        while (__evalResult == null) {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+            }
+        }
+        BigDecimal copy = __evalResult;
+        __evalResult = null;
+        return copy;
     }
 }

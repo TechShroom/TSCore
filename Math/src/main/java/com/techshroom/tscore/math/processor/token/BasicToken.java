@@ -27,7 +27,7 @@ public class BasicToken implements Token {
         }
         return false;
     }
-    
+
     @Override
     public String toString() {
         return value;

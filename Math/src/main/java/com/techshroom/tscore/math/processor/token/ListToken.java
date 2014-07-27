@@ -9,7 +9,7 @@ public class ListToken extends BasicToken {
         super(val.toString());
         tokenList = val;
     }
-    
+
     public List<Token> list() {
         return tokenList;
     }

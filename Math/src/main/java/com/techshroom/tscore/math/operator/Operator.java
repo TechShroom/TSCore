@@ -150,7 +150,7 @@ public final class Operator {
             NumberPlacement requestedPlacement) {
         return tokenLookups.get(new TknAndPlaceKey(requestedPlacement, token));
     }
-    
+
     public static Operator[] operatersForToken(String token) {
         Operator[] ops = new Operator[NumberPlacement.values().length];
         NumberPlacement[] allPlacements = NumberPlacement.values();
