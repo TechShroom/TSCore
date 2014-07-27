@@ -9,9 +9,10 @@ import org.junit.Test;
 
 import com.techshroom.tscore.log.LogProvider;
 import com.techshroom.tscore.math.exceptions.EvalException;
-import com.techshroom.tscore.math.processor.ExpressionParseProvider;
-import com.techshroom.tscore.math.processor.ExpressionProcessor;
+import com.techshroom.tscore.math.processor.*;
+import com.techshroom.tscore.math.processor.token.DeferredInfixToken;
 
+@SuppressWarnings("static-method")
 public class ParsingTest {
 
     @BeforeClass
@@ -20,50 +21,84 @@ public class ParsingTest {
         LogProvider.overrideSTDStreams();
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void onePlusOneIsTwo() {
+    public void onePlusOneIsTwo() throws Throwable {
         assertThat("1+1", BigDecimal.valueOf(2));
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void onePlusNegOneIsZero() {
+    public void onePlusNegOneIsZero() throws Throwable {
         assertThat("1+-1", BigDecimal.valueOf(0));
     }
 
-    @SuppressWarnings("static-method")
     @Test
-    public void sine90Is1() {
+    public void sine90Is1() throws Throwable {
         assertThat("sin(90)", BigDecimal.valueOf(1));
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
-    public void malformedSineA() {
+    public void malformedSineA() throws Throwable {
         assertThatWillFail("sin 90)", BigDecimal.valueOf(1));
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
-    public void malformedSineB() {
+    public void malformedSineB() throws Throwable {
         assertThatWillFail("sin(90", BigDecimal.valueOf(1));
     }
 
-    @SuppressWarnings("static-method")
     @Test(expected = EvalException.class)
-    public void malformedSineC() {
+    public void malformedSineC() throws Throwable {
         assertThatWillFail("sin 90", BigDecimal.valueOf(1));
     }
 
-    private static void assertThatWillFail(String expr, BigDecimal eq) {
+    private static void assertThatWillFail(String expr, BigDecimal eq)
+            throws Throwable {
         System.err.print(expr + " should be invalid; ");
         assertThat(expr, eq);
     }
 
-    private static void assertThat(String expr, BigDecimal eq) {
-        System.err.println("Parsing '" + expr + "'; it should equal " + eq);
-        ExpressionProcessor proc = ExpressionParseProvider.processorFor(expr);
+    private static void assertThat(String expr, BigDecimal eq) throws Throwable {
+        Throwable toThrow = null;
+        ExpressionProcessor ep = ExpressionParseProvider.processorFor(expr);
+        try {
+            assertThat(expr, eq, ep);
+        } catch (Throwable t) {
+            toThrow = t;
+        }
+        try {
+            if (ep instanceof InfixProcessor)
+                assertThat(
+                        expr,
+                        eq,
+                        new DeferredInfixToken(ExpressionProcessor
+                                .generateTokens(expr, null)));
+            else if (ep instanceof PostfixProcessor)
+                assertThat(
+                        expr,
+                        eq,
+                        new DeferredInfixToken(ExpressionProcessor
+                                .generateTokens(expr, null)));
+            else
+                fail("Unknown processor " + ep.getClass() + ".");
+        } catch (AssertionError reThrow) {
+            throw reThrow;
+        } catch (Throwable t) {
+            if (toThrow != null) {
+                System.err.println("Disregarding second throwable: "
+                        + t.getLocalizedMessage());
+            } else {
+                toThrow = t;
+            }
+        }
+        if (toThrow != null) {
+            throw toThrow;
+        }
+    }
+
+    private static void assertThat(String expr, BigDecimal eq,
+            ExpressionProcessor proc) {
+        System.err.println("Parsing '" + expr + "' with " + proc
+                + "; it should equal " + eq);
         BigDecimal result = proc.process();
         System.err.println("" + expr + "=" + result);
         assertEquals(eq, result);

@@ -7,6 +7,8 @@ import com.techshroom.tscore.math.processor.token.Token;
 
 public class PostfixProcessor extends ExpressionProcessor {
 
+    protected BigDecimal result = BigDecimal.ZERO;
+
     protected PostfixProcessor(String proc) throws EvalException {
         super(proc);
     }
@@ -18,7 +20,7 @@ public class PostfixProcessor extends ExpressionProcessor {
     }
 
     @Override
-    protected void onToken(Token t) {
+    protected void onToken(Token t, int index) {
     }
 
     @Override

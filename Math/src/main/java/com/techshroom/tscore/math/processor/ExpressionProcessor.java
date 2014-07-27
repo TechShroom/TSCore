@@ -3,23 +3,22 @@ package com.techshroom.tscore.math.processor;
 import static com.techshroom.tscore.math.processor.RegexPatterns.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
 import com.techshroom.tscore.math.processor.token.*;
-import com.techshroom.tscore.regex.*;
+import com.techshroom.tscore.regex.ExtendedMatcher;
+import com.techshroom.tscore.regex.MatchInfo;
 
 public abstract class ExpressionProcessor {
-    protected final String processing;
-    protected int nextTokenIndex = 0;
-
-    protected ExpressionProcessor(String proc) throws EvalException {
-        processing = proc.trim();
-        // tokenize();
-    }
-
-    protected final void tokenize() throws EvalException {
+    public static final List<Token> generateTokens(String processing,
+            ExpressionProcessor callback) {
+        System.err.println("Generating for '" + processing + "'");
+        List<Token> building = new ArrayList<Token>();
+        int nextTokenIndex = 0;
         // we can tokenize:
         // operators: required to tokenize: at least one @ var, at most two,
         // make it a function after that
@@ -62,8 +61,23 @@ public abstract class ExpressionProcessor {
                         + processing.charAt(nextTokenIndex));
             }
             System.err.println(token);
-            onToken(token);
+            if (callback != null) {
+                callback.onToken(token, nextTokenIndex);
+            }
+            building.add(token);
         }
+        return building;
+    }
+
+    protected final String processing;
+
+    protected ExpressionProcessor(String proc) throws EvalException {
+        processing = proc.trim();
+        // tokenize();
+    }
+
+    protected final void tokenize() throws EvalException {
+        generateTokens(processing, this);
     }
 
     /**
@@ -71,7 +85,7 @@ public abstract class ExpressionProcessor {
      */
     protected abstract void callTokenize();
 
-    protected abstract void onToken(Token token);
+    protected abstract void onToken(Token token, int index);
 
     public abstract BigDecimal process();
 }

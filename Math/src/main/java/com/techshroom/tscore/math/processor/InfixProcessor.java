@@ -12,7 +12,9 @@ public class InfixProcessor extends ExpressionProcessor {
         DEFAULT, WAITING_FOR_L_PAREN, WAITING_FOR_R_PAREN, BUILDING_COMMA_LIST;
     }
 
-    private final TokenProc worker = new TokenProc();
+    protected final TokenProc worker = new TokenProc();
+
+    protected BigDecimal result = BigDecimal.ZERO;
 
     protected InfixProcessor(String proc) throws EvalException {
         super(proc);
@@ -21,32 +23,37 @@ public class InfixProcessor extends ExpressionProcessor {
     @Override
     public BigDecimal process() {
         callTokenize();
-        System.err.println(worker.output + " from " + Thread.currentThread());
-        return BigDecimal.ZERO;
+        return result;
     }
 
     @Override
-    protected void onToken(Token t) {
+    protected void onToken(Token t, int index) {
         worker.onToken(t);
     }
 
     @Override
     protected void callTokenize() {
         tokenize();
+        generateResult();
+    }
+    
+    protected void generateResult() {
+        result = new DeferredPostfixToken(worker.output).process();
+        System.err.println(worker.output + " from " + Thread.currentThread());
     }
 
-    private final class TokenProc {
+    protected final class TokenProc {
         private State state = State.DEFAULT;
         private Token passToken;
         private final LinkedList<Token> output;
         private final LinkedList<Token> operators;
-        private final LinkedList<List<Token>> listOfBuildingList;
+        private final LinkedList<LinkedList<Token>> listOfBuildingList;
         private String argument;
 
         private TokenProc() {
             output = new LinkedList<Token>();
             operators = new LinkedList<Token>();
-            listOfBuildingList = new LinkedList<List<Token>>();
+            listOfBuildingList = new LinkedList<LinkedList<Token>>();
         }
 
         private void onToken(Token t) {
@@ -55,17 +62,18 @@ public class InfixProcessor extends ExpressionProcessor {
             }
 
             if (state == State.WAITING_FOR_L_PAREN) {
-                passToken = null;
                 state = State.DEFAULT;
                 if (t.value().equals("(")) {
                     // only functions wait for (, it is otherwise "unexpected"
                     state = State.BUILDING_COMMA_LIST;
-                    listOfBuildingList.push(new ArrayList<Token>());
+                    listOfBuildingList.push(new LinkedList<Token>());
                     argument = "";
+                    listOfBuildingList.peek().add(passToken);
                 } else {
                     throw new EvalException(Reason.PARSE_ERROR, "(", "after "
                             + passToken.value() + "; before " + t.value());
                 }
+                passToken = null;
                 return;
             }
 
@@ -75,12 +83,14 @@ public class InfixProcessor extends ExpressionProcessor {
                 if (t.value().equals(")")) {
                     finishedMakingArgument();
                     // list over, man
-                    output.push(new ListToken(listOfBuildingList.pop()));
+                    LinkedList<Token> list = listOfBuildingList.pop();
+                    output.push(new ListToken(list));
                     return;
                 } else if (t.value().equals(",")) {
                     finishedMakingArgument();
                 } else {
                     argument += t.value();
+                    return;
                 }
 
                 if (listOfBuildingList.isEmpty()) {
@@ -100,30 +110,9 @@ public class InfixProcessor extends ExpressionProcessor {
         }
 
         private void finishedMakingArgument() {
-            BigDecimal argumentValue = evalWithNoStackProblems(argument);
-            listOfBuildingList.peek().add(new NumberToken(argumentValue));
+            Token argumentValue = new DeferredInfixToken(generateTokens(argument,
+                    null));
+            listOfBuildingList.peek().add(argumentValue);
         }
-    }
-
-    private volatile BigDecimal __evalResult;
-
-    private BigDecimal evalWithNoStackProblems(final String s) {
-        Thread t = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                __evalResult = new InfixProcessor(s).process();
-            }
-        });
-        t.start();
-        while (__evalResult == null) {
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-            }
-        }
-        BigDecimal copy = __evalResult;
-        __evalResult = null;
-        return copy;
     }
 }
