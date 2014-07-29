@@ -9,21 +9,10 @@ public final class RegexPatterns {
     public static final Pattern NUMBER_REGEX = Pattern
             .compile(RegexBits.NUMBER_BASE);
     /**
-     * Regex to validate functions.
-     */
-    public static final Pattern FUNCTION_VALIDATE_REGEX = Pattern.compile("("
-            + RegexBits.FUNCTION + RegexBits.OPTSPACE + "\\(("
-            + RegexBits.OPTSPACE + RegexBits.VARIABLE + "?(?:"
-            + RegexBits.OPTSPACE + "," + RegexBits.OPTSPACE
-            + RegexBits.VARIABLE + ")*)" + RegexBits.OPTSPACE + "\\))");
-    /**
      * Regex to find functions.
      * */
-    public static final Pattern FUNCTION_GET_REGEX = Pattern.compile("("
-            + RegexBits.FUNCTION + RegexBits.OPTSPACE + "(?=\\(("
-            + RegexBits.OPTSPACE + RegexBits.NUMBER_BASE + "?(?:"
-            + RegexBits.OPTSPACE + "," + RegexBits.OPTSPACE
-            + RegexBits.NUMBER_BASE + ")*)" + RegexBits.OPTSPACE + "\\)))");
+    public static final Pattern FUNCTION_GET_REGEX = Pattern
+            .compile(RegexBits.FUNCTION);
     /**
      * Regex to get operators.
      */
@@ -32,8 +21,7 @@ public final class RegexPatterns {
     /**
      * Regex to get strings.
      */
-    public static final Pattern STRING_GET_REGEX = Pattern
-            .compile("\"(.+?)\"");
+    public static final Pattern STRING_GET_REGEX = Pattern.compile("\"(.+?)\"");
 
     private RegexPatterns() {
     }
