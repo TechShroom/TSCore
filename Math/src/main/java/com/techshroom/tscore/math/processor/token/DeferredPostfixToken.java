@@ -27,8 +27,18 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
 
     private void doTokenize() {
         for (Token t : values) {
-            onToken(t, -1);
+            super_onToken(t, -1);
         }
+    }
+
+    private void super_onToken(Token t, int index) {
+        super.onToken(t, index);
+    }
+
+    @Override
+    protected void onToken(Token t, int index) {
+        throw new UnsupportedOperationException(
+                "A defered parser cannot accept more tokens");
     }
 
     @Override

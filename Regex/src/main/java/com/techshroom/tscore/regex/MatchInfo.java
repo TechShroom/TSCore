@@ -1,9 +1,9 @@
 package com.techshroom.tscore.regex;
 
+import static com.techshroom.tscore.util.QuickStringBuilder.*;
+
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
-
-import com.techshroom.tscore.util.QuickStringBuilder;
 
 public final class MatchInfo {
 
@@ -79,7 +79,7 @@ public final class MatchInfo {
     @SuppressWarnings("boxing")
     @Override
     public String toString() {
-        return QuickStringBuilder.build("MatchInfo<", "match=", getMatch(),
+        return concatToStringComplex("MatchInfo<", "match=", getMatch(),
                 ",start=", getStart(), ",end=", getEnd(), ",index=", index,
                 ",groups[]=", groups, ">");
     }

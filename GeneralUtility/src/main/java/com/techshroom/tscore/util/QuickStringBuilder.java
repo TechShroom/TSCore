@@ -10,13 +10,29 @@ public final class QuickStringBuilder {
     }
 
     /**
-     * Makes a string from the result of concatenating the given argumnts.
+     * Makes a string from the result of concatenating the given arguments.
      * 
      * @param args
      *            - the input
      * @return the resultant string
      */
-    public static final String build(Object... args) {
+    public static final String concatToString(Object... args) {
+        StringBuilder sb = new StringBuilder();
+        for (Object o : args) {
+            sb.append(o);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Makes a string from the result of concatenating the given arguments. Adds
+     * some special additions and converts arrays to strings properly.
+     * 
+     * @param args
+     *            - the input
+     * @return the resultant string
+     */
+    public static final String concatToStringComplex(Object... args) {
         StringBuilder sb = new StringBuilder();
         boolean addQuotes = false;
         for (Object o : args) {

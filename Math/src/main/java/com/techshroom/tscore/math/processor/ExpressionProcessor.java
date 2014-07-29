@@ -44,22 +44,22 @@ public abstract class ExpressionProcessor {
             f = extF.lookingAt(nextTokenIndex);
             s = extS.lookingAt(nextTokenIndex);
             if (s.hasMatch()) {
-                token = (new BasicToken(s.getMatch()));
+                token = (new BasicToken(s.getMatch(), TokenFlag.STRING));
                 nextTokenIndex = s.getEnd();
-            } else if (o.hasMatch()) {
-                token = (new BasicToken(o.getMatch()));
+            } else if (o.hasMatch() && !o.getMatch().matches("\\(|\\)")) {
+                token = (new BasicToken(o.getMatch(), TokenFlag.OPERATOR));
                 nextTokenIndex = o.getEnd();
             } else if (n.hasMatch()) {
                 token = (new NumberToken(new BigDecimal(n.getMatch())));
                 nextTokenIndex = n.getEnd();
             } else if (f.hasMatch()) {
-                token = (new BasicToken(f.getMatch()));
+                token = (new BasicToken(f.getMatch(), TokenFlag.FUNCTION));
                 nextTokenIndex = f.getEnd();
             } else if (processing.charAt(nextTokenIndex) == '(') {
-                token = (new BasicToken("("));
+                token = (new BasicToken("(", TokenFlag.OTHER));
                 nextTokenIndex++;
             } else if (processing.charAt(nextTokenIndex) == ')') {
-                token = (new BasicToken(")"));
+                token = (new BasicToken(")", TokenFlag.OTHER));
                 nextTokenIndex++;
             } else if (processing.charAt(nextTokenIndex) == ' ') {
                 nextTokenIndex++;

@@ -1,10 +1,14 @@
 package com.techshroom.tscore.math.processor.token;
 
+import static com.techshroom.tscore.util.QuickStringBuilder.*;
+
 public class BasicToken implements Token {
     private final String value;
+    private final TokenFlag flag;
 
-    public BasicToken(String val) {
+    public BasicToken(String val, TokenFlag flg) {
         value = val;
+        flag = flg;
     }
 
     @Override
@@ -12,9 +16,13 @@ public class BasicToken implements Token {
         return value;
     }
 
+    public TokenFlag flag() {
+        return flag;
+    }
+
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return value.hashCode() - flag.hashCode();
     }
 
     @Override
@@ -23,13 +31,14 @@ public class BasicToken implements Token {
             return true;
         }
         if (obj instanceof BasicToken) {
-            return ((BasicToken) obj).value.equals(value);
+            return ((BasicToken) obj).value.equals(value)
+                    && ((BasicToken) obj).flag.equals(flag);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return value;
+        return concatToStringComplex(flag, "<", "value=", value, ">");
     }
 }

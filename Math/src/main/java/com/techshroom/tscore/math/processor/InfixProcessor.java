@@ -28,7 +28,7 @@ public class InfixProcessor extends ExpressionProcessor {
 
     @Override
     protected void onToken(Token t, int index) {
-        worker.onToken(t);
+        worker.onToken(t, index);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class InfixProcessor extends ExpressionProcessor {
             listOfBuildingList = new LinkedList<LinkedList<Token>>();
         }
 
-        private void onToken(Token t) {
+        private void onToken(Token t, int index) {
             if (t == null) {
                 throw new IllegalStateException("Null token");
             }
@@ -102,15 +102,31 @@ public class InfixProcessor extends ExpressionProcessor {
                 output.add(t);
                 return;
             }
+            if (!(t instanceof BasicToken)) {
+                // hmmm...
+                throw new RuntimeException(
+                        "Token not a BasicToken, ask dev to determine what should happen here. Sorry!");
+            }
+            BasicToken bt = (BasicToken) t;
+            handleBasicTokenStuff(bt, index);
+        }
+
+        private void handleBasicTokenStuff(BasicToken t, int index) {
+
             String tknstr = t.value();
             if (tknstr.matches(RegexBits.FUNCTION)) {
                 state = State.WAITING_FOR_L_PAREN;
                 passToken = t;
                 return;
-            } else if (tknstr.equals("(")) {
-                operators.add(t);
-            }else if (tknstr.equals(")")) {
-                operators.add(t);
+            } else if (t.flag() == TokenFlag.OTHER) {
+                if (tknstr.equals("(")) {
+                    operators.add(t);
+                } else if (tknstr.equals(")")) {
+                    operators.add(t);
+                } else {
+                    throw new EvalException(Reason.PARSE_ERROR, "( or )",
+                            Integer.valueOf(index));
+                }
             } else {
                 // some operator
             }

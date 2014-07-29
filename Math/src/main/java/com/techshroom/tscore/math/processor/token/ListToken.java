@@ -6,7 +6,7 @@ public class ListToken extends BasicToken {
     private final List<Token> tokenList;
 
     public ListToken(List<Token> val) {
-        super(val.toString());
+        super(val.toString(), TokenFlag.LIST);
         tokenList = val;
     }
 

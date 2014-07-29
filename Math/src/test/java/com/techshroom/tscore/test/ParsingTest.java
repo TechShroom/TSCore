@@ -11,6 +11,7 @@ import com.techshroom.tscore.log.LogProvider;
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.processor.*;
 import com.techshroom.tscore.math.processor.token.DeferredInfixToken;
+import com.techshroom.tscore.math.processor.token.DeferredPostfixToken;
 
 @SuppressWarnings("static-method")
 public class ParsingTest {
@@ -51,6 +52,11 @@ public class ParsingTest {
         assertThatWillFail("sin 90", BigDecimal.valueOf(1));
     }
 
+    @Test(expected = EvalException.class)
+    public void malformedOther() throws Throwable {
+        assertThatWillFail("[90|", BigDecimal.valueOf(90));
+    }
+
     private static void assertThatWillFail(String expr, BigDecimal eq)
             throws Throwable {
         System.err.print(expr + " should be invalid; ");
@@ -66,20 +72,18 @@ public class ParsingTest {
             toThrow = t;
         }
         try {
-            if (ep instanceof InfixProcessor)
+            if (ep instanceof InfixProcessor) {
                 assertThat(
                         expr,
                         eq,
                         new DeferredInfixToken(ExpressionProcessor
                                 .generateTokens(expr, null)));
-            else if (ep instanceof PostfixProcessor)
-                assertThat(
-                        expr,
-                        eq,
-                        new DeferredInfixToken(ExpressionProcessor
-                                .generateTokens(expr, null)));
-            else
+            } else if (ep instanceof PostfixProcessor) {
+                assertThat(expr, eq, new DeferredPostfixToken(
+                        ExpressionProcessor.generateTokens(expr, null)));
+            } else {
                 fail("Unknown processor " + ep.getClass() + ".");
+            }
         } catch (AssertionError reThrow) {
             throw reThrow;
         } catch (Throwable t) {

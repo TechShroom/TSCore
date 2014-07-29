@@ -1,10 +1,10 @@
 package com.techshroom.tscore.math.operator;
 
+import static com.techshroom.tscore.util.QuickStringBuilder.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-
-import com.techshroom.tscore.util.QuickStringBuilder;
 
 public final class Operator {
     private static final class OperatorLookupKey {
@@ -44,7 +44,7 @@ public final class Operator {
         @SuppressWarnings("boxing")
         @Override
         public String toString() {
-            return QuickStringBuilder.build("OpKey<", "placement=", placement,
+            return concatToStringComplex("OpKey<", "placement=", placement,
                     ",token=", token, ",associativeness=", assoc, ",priority=",
                     priority, ">");
         }
@@ -79,7 +79,7 @@ public final class Operator {
 
         @Override
         public String toString() {
-            return QuickStringBuilder.build("OpKey2<", "placement=", placement,
+            return concatToStringComplex("OpKey2<", "placement=", placement,
                     ",token=", token, ">");
         }
     }
@@ -330,8 +330,8 @@ public final class Operator {
     private void checkInputs(Number[] in) {
         if (in.length < inputCount()) {
             throw new IllegalArgumentException("Not enough numbers for input "
-                    + QuickStringBuilder.build("(needed ", inputCount(),
-                            ", got ", in.length, ")"));
+                    + concatToString("(needed ", inputCount(), ", got ",
+                            in.length, ")"));
         }
     }
 }
