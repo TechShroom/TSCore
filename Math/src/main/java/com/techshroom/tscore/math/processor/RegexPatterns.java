@@ -29,6 +29,11 @@ public final class RegexPatterns {
      */
     public static final Pattern OPERATOR_GET_REGEX = Pattern
             .compile(RegexBits.OPERATOR);
+    /**
+     * Regex to get strings.
+     */
+    public static final Pattern STRING_GET_REGEX = Pattern
+            .compile("\"(.+?)\"");
 
     private RegexPatterns() {
     }

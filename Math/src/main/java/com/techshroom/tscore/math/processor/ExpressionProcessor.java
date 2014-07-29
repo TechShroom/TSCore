@@ -28,19 +28,25 @@ public abstract class ExpressionProcessor {
         Matcher numMatcher = NUMBER_REGEX.matcher(processing);
         Matcher funcMatcher = FUNCTION_GET_REGEX.matcher(processing);
         Matcher opMatcher = OPERATOR_GET_REGEX.matcher(processing);
+        Matcher stringMatcher = STRING_GET_REGEX.matcher(processing);
 
         ExtendedMatcher extN = ExtendedMatcher.get(numMatcher);
         ExtendedMatcher extO = ExtendedMatcher.get(opMatcher);
         ExtendedMatcher extF = ExtendedMatcher.get(funcMatcher);
+        ExtendedMatcher extS = ExtendedMatcher.get(stringMatcher);
         // int next = 0;
-        MatchInfo n, o, f;
+        MatchInfo n, o, f, s;
 
         while (nextTokenIndex < processing.length()) {
             Token token;
             n = extN.lookingAt(nextTokenIndex);
             o = extO.lookingAt(nextTokenIndex);
             f = extF.lookingAt(nextTokenIndex);
-            if (o.hasMatch()) {
+            s = extS.lookingAt(nextTokenIndex);
+            if (s.hasMatch()) {
+                token = (new BasicToken(s.getMatch()));
+                nextTokenIndex = s.getEnd();
+            } else if (o.hasMatch()) {
                 token = (new BasicToken(o.getMatch()));
                 nextTokenIndex = o.getEnd();
             } else if (n.hasMatch()) {
@@ -55,6 +61,9 @@ public abstract class ExpressionProcessor {
             } else if (processing.charAt(nextTokenIndex) == ')') {
                 token = (new BasicToken(")"));
                 nextTokenIndex++;
+            } else if (processing.charAt(nextTokenIndex) == ' ') {
+                nextTokenIndex++;
+                continue;
             } else {
                 // we don't know how to handle this
                 throw new EvalException(Reason.UKNOWN_ERROR, "Cannot process "

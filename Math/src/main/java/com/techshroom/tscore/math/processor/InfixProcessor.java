@@ -36,7 +36,7 @@ public class InfixProcessor extends ExpressionProcessor {
         tokenize();
         generateResult();
     }
-    
+
     protected void generateResult() {
         result = new DeferredPostfixToken(worker.output).process();
         System.err.println(worker.output + " from " + Thread.currentThread());
@@ -103,15 +103,22 @@ public class InfixProcessor extends ExpressionProcessor {
                 return;
             }
             String tknstr = t.value();
-            if (tknstr.length() > 1 && tknstr.matches(RegexBits.FUNCTION)) {
+            if (tknstr.matches(RegexBits.FUNCTION)) {
                 state = State.WAITING_FOR_L_PAREN;
                 passToken = t;
+                return;
+            } else if (tknstr.equals("(")) {
+                operators.add(t);
+            }else if (tknstr.equals(")")) {
+                operators.add(t);
+            } else {
+                // some operator
             }
         }
 
         private void finishedMakingArgument() {
-            Token argumentValue = new DeferredInfixToken(generateTokens(argument,
-                    null));
+            Token argumentValue = new DeferredInfixToken(generateTokens(
+                    argument, null));
             listOfBuildingList.peek().add(argumentValue);
         }
     }
