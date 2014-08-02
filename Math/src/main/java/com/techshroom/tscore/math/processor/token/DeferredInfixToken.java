@@ -1,6 +1,5 @@
 package com.techshroom.tscore.math.processor.token;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.techshroom.tscore.math.processor.InfixProcessor;
@@ -20,10 +19,9 @@ public class DeferredInfixToken extends InfixProcessor implements Token {
     }
 
     @Override
-    public BigDecimal process() {
+    public void doTheHardWork() {
         doTokenize();
         generateResult();
-        return result;
     }
 
     private void doTokenize() {

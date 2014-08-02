@@ -38,7 +38,7 @@ public final class Operator {
         @Override
         public int hashCode() {
             return placement.hashCode() + assoc.hashCode()
-                    / (priority / token.hashCode());
+                    / ((priority * token.hashCode()) + 1);
         }
 
         @SuppressWarnings("boxing")
@@ -50,42 +50,8 @@ public final class Operator {
         }
     }
 
-    private static final class TknAndPlaceKey {
-        private final NumberPlacement placement;
-        private final String token;
-
-        private TknAndPlaceKey(NumberPlacement plcmnt, String tkn) {
-            placement = plcmnt;
-            token = tkn;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj instanceof OperatorLookupKey) {
-                OperatorLookupKey olk = (OperatorLookupKey) obj;
-                return olk.placement == placement
-                        && token.equalsIgnoreCase(olk.token);
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return placement.hashCode() + token.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return concatToStringComplex("OpKey2<", "placement=", placement,
-                    ",token=", token, ">");
-        }
-    }
-
     private static final Map<OperatorLookupKey, Operator> lookups = new HashMap<OperatorLookupKey, Operator>();
-    private static final Map<TknAndPlaceKey, Operator> tokenLookups = new HashMap<TknAndPlaceKey, Operator>();
+    private static final Map<String, Operator> tokenLookups = new HashMap<String, Operator>();
 
     public static final Comparator<Operator> ASSOC_COMPARATOR = new Comparator<Operator>() {
         @Override
@@ -111,7 +77,6 @@ public final class Operator {
             OperatorRunner runner) {
         OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
                 prio, token);
-        TknAndPlaceKey otherTarget = new TknAndPlaceKey(placement, token);
         Operator o = getOperator(token, placement);
         if (o != null) {
             OperatorLookupKey olk = o.ourKey;
@@ -132,8 +97,12 @@ public final class Operator {
                         .append("associativeness mismatched (should have been ")
                         .append(olk.assoc).append(" was ").append(target.assoc)
                         .append(")");
+            } else if (olk.placement != target.placement) {
+                sb.append("the ")
+                        .append("placement mismatched (should have been ")
+                        .append(olk.placement).append(" was ")
+                        .append(target.placement).append(")");
             } else {
-                // NB: placement isn't handled because it is different.
                 sb.append("an unknown error occured");
             }
             throw new IllegalArgumentException(sb.toString());
@@ -142,23 +111,21 @@ public final class Operator {
         // no operator yet: define it
         o = new Operator(target, runner);
         lookups.put(target, o);
-        tokenLookups.put(otherTarget, o);
-        return getOperator(token, placement);
+        tokenLookups.put(token, o);
+        return getOperator(token);
+    }
+
+    public static Operator getOperator(String token) {
+        return tokenLookups.get(token);
     }
 
     public static Operator getOperator(String token,
             NumberPlacement requestedPlacement) {
-        return tokenLookups.get(new TknAndPlaceKey(requestedPlacement, token));
-    }
-
-    public static Operator[] operatersForToken(String token) {
-        Operator[] ops = new Operator[NumberPlacement.values().length];
-        NumberPlacement[] allPlacements = NumberPlacement.values();
-        for (int i = 0; i < allPlacements.length; i++) {
-            NumberPlacement np = allPlacements[i];
-            ops[i] = getOperator(token, np);
+        Operator o = getOperator(token);
+        if (o == null || o.ourKey.placement != requestedPlacement) {
+            return null;
         }
-        return ops;
+        return o;
     }
 
     private final OperatorLookupKey ourKey;
@@ -326,12 +293,72 @@ public final class Operator {
         return builder.toString();
     }
 
-    @SuppressWarnings("boxing")
     private void checkInputs(Number[] in) {
         if (in.length < inputCount()) {
             throw new IllegalArgumentException("Not enough numbers for input "
-                    + concatToString("(needed ", inputCount(), ", got ",
-                            in.length, ")"));
+                    + concatToString("(needed ", Integer.valueOf(inputCount()),
+                            ", got ", Integer.valueOf(in.length), ")"));
         }
+    }
+
+    private static void defaults() {
+        registerOrGetOperator("+", 0, Associativeness.LEFT,
+                NumberPlacement.BOTH, new OperatorRunner() {
+
+                    @Override
+                    public long runLong(long... longs) {
+                        return longs[0] + longs[1];
+                    }
+
+                    @Override
+                    public double runDouble(double... doubles) {
+                        return doubles[0] + doubles[1];
+                    }
+
+                    @Override
+                    public BigDecimal runBigDec(BigDecimal... bigdecimals) {
+                        return bigdecimals[0].add(bigdecimals[1]);
+                    }
+                });
+        registerOrGetOperator("+", 0, Associativeness.LEFT,
+                NumberPlacement.RIGHT, new OperatorRunner() {
+
+                    @Override
+                    public long runLong(long... longs) {
+                        return +longs[0];
+                    }
+
+                    @Override
+                    public double runDouble(double... doubles) {
+                        return +doubles[0];
+                    }
+
+                    @Override
+                    public BigDecimal runBigDec(BigDecimal... bigdecimals) {
+                        return bigdecimals[0].plus();
+                    }
+                });
+        registerOrGetOperator("-", 0, Associativeness.LEFT,
+                NumberPlacement.RIGHT, new OperatorRunner() {
+
+                    @Override
+                    public long runLong(long... longs) {
+                        return -longs[0];
+                    }
+
+                    @Override
+                    public double runDouble(double... doubles) {
+                        return -doubles[0];
+                    }
+
+                    @Override
+                    public BigDecimal runBigDec(BigDecimal... bigdecimals) {
+                        return bigdecimals[0].negate();
+                    }
+                });
+    }
+
+    static {
+        defaults();
     }
 }

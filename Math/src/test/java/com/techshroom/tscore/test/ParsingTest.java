@@ -39,28 +39,27 @@ public class ParsingTest {
 
     @Test(expected = EvalException.class)
     public void malformedSineA() throws Throwable {
-        assertThatWillFail("sin 90)", BigDecimal.valueOf(1));
+        assertThatWillFail("sin 90)");
     }
 
     @Test(expected = EvalException.class)
     public void malformedSineB() throws Throwable {
-        assertThatWillFail("sin(90", BigDecimal.valueOf(1));
+        assertThatWillFail("sin(90");
     }
 
     @Test(expected = EvalException.class)
     public void malformedSineC() throws Throwable {
-        assertThatWillFail("sin 90", BigDecimal.valueOf(1));
+        assertThatWillFail("sin 90");
     }
 
     @Test(expected = EvalException.class)
     public void malformedOther() throws Throwable {
-        assertThatWillFail("[90|", BigDecimal.valueOf(90));
+        assertThatWillFail("[90|");
     }
 
-    private static void assertThatWillFail(String expr, BigDecimal eq)
-            throws Throwable {
+    private static void assertThatWillFail(String expr) throws Throwable {
         System.err.print(expr + " should be invalid; ");
-        assertThat(expr, eq);
+        assertThat(expr, null);
     }
 
     private static void assertThat(String expr, BigDecimal eq) throws Throwable {

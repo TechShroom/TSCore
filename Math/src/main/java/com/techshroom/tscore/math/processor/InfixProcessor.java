@@ -1,29 +1,38 @@
 package com.techshroom.tscore.math.processor;
 
+import static com.techshroom.tscore.util.QuickStringBuilder.*;
+
 import java.math.BigDecimal;
 import java.util.*;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
+import com.techshroom.tscore.math.operator.Operator;
 import com.techshroom.tscore.math.processor.token.*;
 
 public class InfixProcessor extends ExpressionProcessor {
     private static enum State {
-        DEFAULT, WAITING_FOR_L_PAREN, WAITING_FOR_R_PAREN, BUILDING_COMMA_LIST;
+        DEFAULT, WAITING_FOR_L_PAREN, WAITING_FOR_R_PAREN, WAITING_FOR_LIST;
     }
 
     protected final TokenProc worker = new TokenProc();
 
-    protected BigDecimal result = BigDecimal.ZERO;
+    protected BigDecimal result;
 
     protected InfixProcessor(String proc) throws EvalException {
         super(proc);
     }
 
     @Override
-    public BigDecimal process() {
-        callTokenize();
+    public final BigDecimal process() {
+        if (result == null) {
+            doTheHardWork();
+        }
         return result;
+    }
+
+    protected void doTheHardWork() {
+        callTokenize();
     }
 
     @Override
@@ -47,13 +56,12 @@ public class InfixProcessor extends ExpressionProcessor {
         private Token passToken;
         private final LinkedList<Token> output;
         private final LinkedList<Token> operators;
-        private final LinkedList<LinkedList<Token>> listOfBuildingList;
-        private String argument;
+        private final List<Token> funcList;
 
         private TokenProc() {
             output = new LinkedList<Token>();
             operators = new LinkedList<Token>();
-            listOfBuildingList = new LinkedList<LinkedList<Token>>();
+            funcList = new ArrayList<Token>();
         }
 
         private void onToken(Token t, int index) {
@@ -62,39 +70,40 @@ public class InfixProcessor extends ExpressionProcessor {
             }
 
             if (state == State.WAITING_FOR_L_PAREN) {
-                state = State.DEFAULT;
                 if (t.value().equals("(")) {
                     // only functions wait for (, it is otherwise "unexpected"
-                    state = State.BUILDING_COMMA_LIST;
-                    listOfBuildingList.push(new LinkedList<Token>());
-                    argument = "";
-                    listOfBuildingList.peek().add(passToken);
+                    state = State.WAITING_FOR_LIST;
                 } else {
+                    state = State.DEFAULT;
                     throw new EvalException(Reason.PARSE_ERROR, "(", "after "
                             + passToken.value() + "; before " + t.value());
                 }
                 passToken = null;
                 return;
-            }
-
-            if (state == State.BUILDING_COMMA_LIST) {
-                // this is sort of a waiting for R_PAREN state
-                // but we are also building a list.
-                if (t.value().equals(")")) {
-                    finishedMakingArgument();
-                    // list over, man
-                    LinkedList<Token> list = listOfBuildingList.pop();
-                    output.push(new ListToken(list));
-                    return;
-                } else if (t.value().equals(",")) {
-                    finishedMakingArgument();
+            } else if (state == State.WAITING_FOR_LIST) {
+                if (t instanceof ListToken) {
+                    // args list
+                    funcList.add(t);
+                    state = State.WAITING_FOR_R_PAREN;
                 } else {
-                    argument += t.value();
-                    return;
+                    state = State.DEFAULT;
+                    throw new EvalException(Reason.PARSE_ERROR,
+                            "a list of args", Integer.valueOf(index));
                 }
 
-                if (listOfBuildingList.isEmpty()) {
+                if (funcList.isEmpty()) {
                     state = State.DEFAULT;
+                }
+                return;
+            } else if (state == State.WAITING_FOR_R_PAREN) {
+                state = State.DEFAULT;
+                if (t.value().equals(")")) {
+                    output.push(new ListToken(funcList));
+                    funcList.clear();
+                    return;
+                } else {
+                    throw new EvalException(Reason.PARSE_ERROR, ")",
+                            Integer.valueOf(index));
                 }
             }
 
@@ -104,17 +113,18 @@ public class InfixProcessor extends ExpressionProcessor {
             }
             if (!(t instanceof BasicToken)) {
                 // hmmm...
-                throw new RuntimeException(
-                        "Token not a BasicToken, ask dev to determine what should happen here. Sorry!");
+                state = State.DEFAULT;
+                throw new RuntimeException("Token not a BasicToken,"
+                        + " ask dev to determine what should "
+                        + "happen here. Sorry! " + t);
             }
             BasicToken bt = (BasicToken) t;
             handleBasicTokenStuff(bt, index);
         }
 
         private void handleBasicTokenStuff(BasicToken t, int index) {
-
             String tknstr = t.value();
-            if (tknstr.matches(RegexBits.FUNCTION)) {
+            if (t.flag() == TokenFlag.FUNCTION) {
                 state = State.WAITING_FOR_L_PAREN;
                 passToken = t;
                 return;
@@ -127,15 +137,20 @@ public class InfixProcessor extends ExpressionProcessor {
                     throw new EvalException(Reason.PARSE_ERROR, "( or )",
                             Integer.valueOf(index));
                 }
-            } else {
+            } else if (t.flag() == TokenFlag.OPERATOR) {
                 // some operator
+                while (operators.peek() != null) {
+                    Operator pop = Operator
+                            .getOperator(operators.pop().value());
+                }
+            } else if (t.flag() == TokenFlag.FUNCTION_DEF) {
+                // function def
+            } else {
+                throw new EvalException(Reason.UKNOWN_ERROR, "Invalid token: "
+                        + t
+                        + concatToString(" (state: ", state, ", output=",
+                                output, ", operators=", operators));
             }
-        }
-
-        private void finishedMakingArgument() {
-            Token argumentValue = new DeferredInfixToken(generateTokens(
-                    argument, null));
-            listOfBuildingList.peek().add(argumentValue);
         }
     }
 }

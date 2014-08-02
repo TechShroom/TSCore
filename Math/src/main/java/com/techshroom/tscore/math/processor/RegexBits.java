@@ -2,6 +2,10 @@ package com.techshroom.tscore.math.processor;
 
 public final class RegexBits {
     /**
+     * Parenthesis.
+     */
+    public static final String LPAREN = "\\(", RPAREN = "\\)";
+    /**
      * Variable finder in the form @variableName, where variableName may contain
      * alpha-numeric values only and must not start with a number.
      */
@@ -23,7 +27,7 @@ public final class RegexBits {
     /**
      * Operator regex to find just the operator
      */
-    public static final String OPERATOR = "([^a-zA-Z0-9])";
+    public static final String OPERATOR = "([^a-zA-Z0-9 ]+)";
 
     private RegexBits() {
     }

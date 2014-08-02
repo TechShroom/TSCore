@@ -39,9 +39,13 @@ public class EvalException extends RuntimeException {
          */
         FUNCTION_ERROR("Function %s threw an error while being processed"),
         /**
+         * Duplicate entry. Args: [dup_name, obj1, obj2]
+         */
+        DUPLICATE("Duplicate: %s (%s <=> %s)"),
+        /**
          * Unknown error. Args: [message]
          */
-        UKNOWN_ERROR("Unknown error %s");
+        UKNOWN_ERROR("Unknown error: %s");
 
         private final String message;
 

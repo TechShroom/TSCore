@@ -1,6 +1,5 @@
 package com.techshroom.tscore.math.processor.token;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.techshroom.tscore.math.processor.PostfixProcessor;
@@ -20,9 +19,9 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
     }
 
     @Override
-    public BigDecimal process() {
+    public void doTheHardWork() {
         doTokenize();
-        return result;
+        // generateResult();
     }
 
     private void doTokenize() {
