@@ -1,5 +1,6 @@
 package com.techshroom.tscore.math.processor.token;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.techshroom.tscore.math.processor.PostfixProcessor;
@@ -8,10 +9,8 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
     private final List<Token> values;
 
     public DeferredPostfixToken(List<Token> val) {
-        // string value not used
-        super(val.toString());
-        values = val;
-        System.err.println(toString());
+        values = new ArrayList<Token>(val);
+        System.err.println(values.toString());
     }
 
     @Override

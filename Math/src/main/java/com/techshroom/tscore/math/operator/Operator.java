@@ -357,25 +357,19 @@ public final class Operator {
                         return bigdecimals[0].add(bigdecimals[1]);
                     }
                 });
-        registerOrGetOperator("+", 0, Associativeness.LEFT,
-                NumberPlacement.RIGHT, new OperatorRunner() {
-
-                    @Override
-                    public long runLong(long... longs) {
-                        return +longs[0];
-                    }
-
-                    @Override
-                    public double runDouble(double... doubles) {
-                        return +doubles[0];
-                    }
-
-                    @Override
-                    public BigDecimal runBigDec(BigDecimal... bigdecimals) {
-                        return bigdecimals[0].plus();
-                    }
-                });
-        registerOrGetOperator("-", 0, Associativeness.LEFT,
+        /*
+         * registerOrGetOperator("+", 0, Associativeness.LEFT,
+         * NumberPlacement.RIGHT, new OperatorRunner() {
+         * 
+         * @Override public long runLong(long... longs) { return +longs[0]; }
+         * 
+         * @Override public double runDouble(double... doubles) { return
+         * +doubles[0]; }
+         * 
+         * @Override public BigDecimal runBigDec(BigDecimal... bigdecimals) {
+         * return bigdecimals[0].plus(); } });
+         */
+        registerOrGetOperator("-", 1, Associativeness.LEFT,
                 NumberPlacement.RIGHT, new OperatorRunner() {
 
                     @Override

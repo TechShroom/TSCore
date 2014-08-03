@@ -49,7 +49,9 @@ public class InfixProcessor extends ExpressionProcessor {
 
     protected void generateResult() {
         worker.finish();
-        result = new DeferredPostfixToken(worker.output).process();
+        List<Token> copy = new ArrayList<Token>(worker.output);
+        // Collections.reverse(copy);
+        result = new DeferredPostfixToken(copy).process();
         System.err.println(worker.output + " from " + Thread.currentThread());
     }
 
@@ -67,6 +69,7 @@ public class InfixProcessor extends ExpressionProcessor {
         }
 
         protected void finish() {
+            System.err.println("Worker: Pop ops-> " + operators);
             while (!operators.isEmpty()) {
                 Token t = operators.pop();
                 if (t instanceof BasicToken) {
@@ -75,7 +78,7 @@ public class InfixProcessor extends ExpressionProcessor {
                         throw new EvalException(Reason.PARSE_ERROR, "(",
                                 "before EOL");
                     } else {
-                        output.push(bt);
+                        output.add(t);
                     }
                 } else {
                     output.push(t);
@@ -174,21 +177,29 @@ public class InfixProcessor extends ExpressionProcessor {
                 while (operators.peek() != null) {
                     Operator o2 = Operator
                             .getOperator(operators.peek().value());
+                    System.err.println(concatToString("checking ", o2, " aka ",
+                            o2.getKey()));
                     Associativeness a1 = o1.getKey().getAssociativeness();
                     if (a1 == Associativeness.LEFT) {
                         if (Operator.PRIORITY_COMPARATOR.compare(o1, o2) <= 0) {
                             output.push(operators.pop());
+                        } else {
+                            break;
                         }
                     } else if (a1 == Associativeness.RIGHT) {
                         if (Operator.PRIORITY_COMPARATOR.compare(o1, o2) < 0) {
                             output.push(operators.pop());
+                        } else {
+                            break;
                         }
                     } else {
                         throw new EvalException(Reason.OPERATOR_ERROR,
                                 o1 + " (not associative)");
                     }
-                    operators.push(t);
                 }
+                System.err.println(concatToString("Pushing ", t, " onto ",
+                        operators));
+                operators.push(t);
             } else if (t.flag() == TokenFlag.FUNCTION_DEF) {
                 // function def
             } else {

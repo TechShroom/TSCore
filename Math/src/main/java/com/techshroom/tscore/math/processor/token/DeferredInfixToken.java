@@ -1,5 +1,6 @@
 package com.techshroom.tscore.math.processor.token;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.techshroom.tscore.math.processor.InfixProcessor;
@@ -10,7 +11,7 @@ public class DeferredInfixToken extends InfixProcessor implements Token {
     public DeferredInfixToken(List<Token> val) {
         // string value not used
         super(val.toString());
-        values = val;
+        values = new ArrayList<Token>(val);
     }
 
     @Override

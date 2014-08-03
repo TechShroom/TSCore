@@ -4,8 +4,7 @@ import com.techshroom.tscore.math.processor.PostfixProcessor;
 
 public class DoubleDeferredPostfixToken extends PostfixProcessor implements
         Token {
-    public DoubleDeferredPostfixToken(String val) {
-        super(val);
+    public DoubleDeferredPostfixToken() {
     }
 
     @Override

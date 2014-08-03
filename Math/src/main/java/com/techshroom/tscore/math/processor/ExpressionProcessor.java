@@ -18,7 +18,6 @@ import com.techshroom.tscore.regex.MatchInfo;
 public abstract class ExpressionProcessor {
     public static final List<Token> generateTokens(String processing,
             ExpressionProcessor callback) {
-        System.err.println("Generating for '" + processing + "'");
         List<Token> building = new ArrayList<Token>();
         int nextTokenIndex = 0, hold = nextTokenIndex;
         // we can tokenize:
@@ -280,7 +279,6 @@ public abstract class ExpressionProcessor {
     private static void static_onToken(Token token,
             ExpressionProcessor callback, int nextTokenIndex,
             List<Token> building) {
-        System.err.println(token);
         if (callback != null) {
             callback.onToken(token, nextTokenIndex);
         }

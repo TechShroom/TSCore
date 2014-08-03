@@ -97,9 +97,6 @@ public class ParsingTest {
                         eq,
                         new DeferredInfixToken(ExpressionProcessor
                                 .generateTokens(expr, null)));
-            } else if (ep instanceof PostfixProcessor) {
-                assertThat(expr, eq, new DeferredPostfixToken(
-                        ExpressionProcessor.generateTokens(expr, null)));
             } else {
                 fail("Unknown processor " + ep.getClass() + ".");
             }

@@ -49,24 +49,5 @@ public final class ExpressionParseProvider {
                         }
                     }
                 }));
-        registerProcessor(new SimpleMatchCheckAndGet<String, PostfixProcessor>(
-                new MatchChecker<String>() {
-                    @Override
-                    public boolean matches(String t) {
-                        return /* TODO: detect diff btwn post/in fix */false;
-                    }
-                }, new SimpleGetter<PostfixProcessor, String>() {
-                    @Override
-                    protected PostfixProcessor doGet() {
-                        return new PostfixProcessor(getARG());
-                    }
-
-                    @Override
-                    public <X> void setData(GetterKey<X> key, X value) {
-                        if (key == EXPRESSION_KEY) {
-                            super.setData(key(), EXPRESSION_KEY.cast(value));
-                        }
-                    }
-                }));
     }
 }

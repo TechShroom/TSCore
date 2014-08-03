@@ -5,18 +5,22 @@ import java.util.LinkedList;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
-import com.techshroom.tscore.math.operator.Operator;
+import com.techshroom.tscore.math.operator.*;
 import com.techshroom.tscore.math.processor.token.*;
 
-public class PostfixProcessor extends ExpressionProcessor {
-    private final LinkedList<NumberToken> stack = new LinkedList<NumberToken>();
-    protected BigDecimal result;
-
-    protected PostfixProcessor(String proc) throws EvalException {
-        super(proc);
+public class PostfixProcessor {
+    private static enum State {
+        DEFAULT, WAITING_FOR_OP_ARG;
     }
 
-    @Override
+    private final LinkedList<NumberToken> stack = new LinkedList<NumberToken>();
+    private State state = State.DEFAULT;
+    private Operator hold;
+    protected BigDecimal result;
+
+    protected PostfixProcessor() {
+    }
+
     public final BigDecimal process() {
         if (result == null) {
             doTheHardWork();
@@ -28,9 +32,14 @@ public class PostfixProcessor extends ExpressionProcessor {
         callTokenize();
     }
 
-    @Override
     protected void onToken(Token t, int index) {
         if (t instanceof NumberToken) {
+            if (state == State.WAITING_FOR_OP_ARG) {
+                stack.push(new NumberToken(hold.runTheNumbers(((NumberToken) t)
+                        .getBigDecimal())));
+                state = State.DEFAULT;
+                return;
+            }
             stack.push((NumberToken) t);
         } else if (t instanceof BasicToken) {
             BasicToken bt = (BasicToken) t;
@@ -45,6 +54,10 @@ public class PostfixProcessor extends ExpressionProcessor {
                     }
                     BigDecimal res = o.runTheNumbers(args);
                     stack.push(new NumberToken(res));
+                } else if (o.getKey().getPlacement() == NumberPlacement.RIGHT) {
+                    // special case: op is to the left, apply to the right
+                    state = State.WAITING_FOR_OP_ARG;
+                    hold = o;
                 } else {
                     throw new EvalException(Reason.NO_NUMBERS);
                 }
@@ -55,9 +68,8 @@ public class PostfixProcessor extends ExpressionProcessor {
         }
     }
 
-    @Override
     protected void callTokenize() {
-        tokenize();
+        // tokenize();
         generateResult();
     }
 
