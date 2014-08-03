@@ -49,8 +49,8 @@ public class PostfixProcessor extends ExpressionProcessor {
                     throw new EvalException(Reason.NO_NUMBERS);
                 }
             } else {
-                throw new EvalException(Reason.UKNOWN_ERROR, "Can't handle "
-                        + bt + " yet!");
+                throw new EvalException(Reason.UKNOWN_ERROR,
+                        "Can't handle " + bt + " yet!");
             }
         }
     }

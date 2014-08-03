@@ -38,9 +38,8 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
     public synchronized void write(byte[] b, int off, int len) {
         try {
             String str = new String(Arrays.copyOfRange(b, off, len));
-            str =
-                    replaceAllButLast(str, "\\r?\\n",
-                            "$0" + Matcher.quoteReplacement(getMethod()));
+            str = replaceAllButLast(str, "\\r?\\n",
+                    "$0" + Matcher.quoteReplacement(getMethod()));
             if (lastNewline) {
                 data += getMethod() + str;
             } else {
@@ -73,9 +72,9 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
             s = ste[i];
             // skip LUtils.print() because we want the method that called that
             // one.
-            if (!s.getClassName().matches("^(java|sun)(.+?)")
-                    && !(s.getClassName().equals(LogProvider.class.getName()) && s
-                            .getMethodName().equals("print"))) {
+            if (!s.getClassName().matches("^(java|sun)(.+?)") && !(s
+                    .getClassName().equals(LogProvider.class.getName()) && s
+                    .getMethodName().equals("print"))) {
                 break;
             }
         }
@@ -84,9 +83,15 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
             throw new IllegalStateException("No stack!");
         }
         String[] classsplit = s.getClassName().split("\\.");
-        return "[" + classsplit[classsplit.length - 1] + "."
-                + s.getMethodName() + "(" + s.getFileName() + ":"
-                + s.getLineNumber() + ")@" + Thread.currentThread().getName()
+        return "[" + classsplit[classsplit.length - 1]
+                + "."
+                + s.getMethodName()
+                + "("
+                + s.getFileName()
+                + ":"
+                + s.getLineNumber()
+                + ")@"
+                + Thread.currentThread().getName()
                 + "] ";
     }
 

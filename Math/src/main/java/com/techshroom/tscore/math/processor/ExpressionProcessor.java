@@ -69,16 +69,16 @@ public abstract class ExpressionProcessor {
                 nextTokenIndex++;
             } else {
                 // we don't know how to handle this
-                throw new EvalException(Reason.UKNOWN_ERROR, "Cannot process "
-                        + processing.charAt(hold));
+                throw new EvalException(Reason.UKNOWN_ERROR,
+                        "Cannot process " + processing.charAt(hold));
             }
             if (token instanceof BasicToken) {
                 BasicToken bt = (BasicToken) token;
                 if (bt.flag() == TokenFlag.OPERATOR) {
                     String test = bt.value();
                     String orig = test;
-                    Deque<MatchInfo> check =
-                            new ArrayDeque<MatchInfo>(test.length());
+                    Deque<MatchInfo> check = new ArrayDeque<MatchInfo>(
+                            test.length());
                     Operator flag = Operator.getOperator(test);
                     boolean flagPassed = false;
                     while (!flagPassed) {
@@ -95,8 +95,8 @@ public abstract class ExpressionProcessor {
                                 flagPassed |= true;
                                 continue;
                             }
-                            if (test.length() == 1
-                                    || (!splitInto(test, check, orig) && flagPassed)) {
+                            if (test.length() == 1 || (!splitInto(test, check,
+                                    orig) && flagPassed)) {
                                 throw new EvalException(
                                         Reason.NO_SUCH_OPERATOR,
                                         orig.substring(mtest.getStart(),
@@ -107,9 +107,9 @@ public abstract class ExpressionProcessor {
                     continue;
                 } else if (bt.flag() == TokenFlag.FUNCTION) {
                     String funcWithArgs = bt.value();
-                    String name =
-                            funcWithArgs.replaceFirst(FUNCTION + LPAREN
-                                    + "(.+)" + RPAREN, "$1");
+                    String name = funcWithArgs.replaceFirst(FUNCTION + LPAREN
+                            + "(.+)"
+                            + RPAREN, "$1");
 
                     // name
                     static_onToken(new BasicToken(name, bt.flag()), callback,
@@ -141,9 +141,9 @@ public abstract class ExpressionProcessor {
 
     private static Token createArgsList(String funcWithArgs, int indBase) {
         List<Token> args = new ArrayList<Token>();
-        String argsStr =
-                funcWithArgs.replaceFirst(FUNCTION + LPAREN + "(.+)" + RPAREN,
-                        "$2");
+        String argsStr = funcWithArgs.replaceFirst(FUNCTION + LPAREN
+                + "(.+)"
+                + RPAREN, "$2");
         char[] str_to_chr = argsStr.toCharArray();
         String parseNext = "";
         LinkedList<Integer> modes = new LinkedList<Integer>();

@@ -46,8 +46,8 @@ public final class QuickStringBuilder {
                 if (addQuotes) {
                     sb.append("'");
                 } else {
-                    addQuotes =
-                            endsWith_array((String) o, BUILD_DEFAULT_ENDSWITH);
+                    addQuotes = endsWith_array((String) o,
+                            BUILD_DEFAULT_ENDSWITH);
                     continue;
                 }
             }

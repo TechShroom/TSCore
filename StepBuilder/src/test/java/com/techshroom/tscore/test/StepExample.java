@@ -25,9 +25,8 @@ public class StepExample {
     @SuppressWarnings({ "static-method", "boxing" })
     @Test
     public void buildersImplementAndWork() {
-        Build build =
-                new Build.Builder().start().a(A_VALUE).b(B_VALUE).c(C_VALUE)
-                        .d(D_VALUE).message(MESSAGE_VALUE).build();
+        Build build = new Build.Builder().start().a(A_VALUE).b(B_VALUE)
+                .c(C_VALUE).d(D_VALUE).message(MESSAGE_VALUE).build();
         assertEquals(build.getA(), A_VALUE);
         assertEquals(build.getB(), B_VALUE);
         assertEquals(build.getC(), C_VALUE);

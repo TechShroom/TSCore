@@ -54,8 +54,7 @@ public enum LoggingGroup {
     public static final Set<LoggingGroup> ALL = EnumSet
             .allOf(LoggingGroup.class);
 
-    private static final Map<Level, LoggingGroup> valueToLevel =
-            new HashMap<Level, LoggingGroup>();
+    private static final Map<Level, LoggingGroup> valueToLevel = new HashMap<Level, LoggingGroup>();
 
     static {
         for (LoggingGroup lg : values()) {

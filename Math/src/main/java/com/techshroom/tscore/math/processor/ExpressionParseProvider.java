@@ -6,10 +6,9 @@ import java.util.List;
 import com.techshroom.tscore.util.*;
 
 public final class ExpressionParseProvider {
-    public static final GetterKey<String> EXPRESSION_KEY =
-            new GetterKey<String>("expr");
-    private static final List<MatchCheckAndGet<String, ? extends ExpressionProcessor>> factories =
-            new ArrayList<MatchCheckAndGet<String, ? extends ExpressionProcessor>>();
+    public static final GetterKey<String> EXPRESSION_KEY = new GetterKey<String>(
+            "expr");
+    private static final List<MatchCheckAndGet<String, ? extends ExpressionProcessor>> factories = new ArrayList<MatchCheckAndGet<String, ? extends ExpressionProcessor>>();
 
     private ExpressionParseProvider() {
     }

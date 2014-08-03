@@ -78,38 +78,33 @@ public final class Operator {
         }
     }
 
-    private static final Map<OperatorLookupKey, Operator> lookups =
-            new HashMap<OperatorLookupKey, Operator>();
-    private static final Map<String, Operator> tokenLookups =
-            new HashMap<String, Operator>();
+    private static final Map<OperatorLookupKey, Operator> lookups = new HashMap<OperatorLookupKey, Operator>();
+    private static final Map<String, Operator> tokenLookups = new HashMap<String, Operator>();
 
-    public static final Comparator<Operator> ASSOC_COMPARATOR =
-            new Comparator<Operator>() {
-                @Override
-                public int compare(Operator o1, Operator o2) {
-                    return o1.ourKey.assoc.compareTo(o2.ourKey.assoc);
-                }
-            };
-    public static final Comparator<Operator> PRIORITY_COMPARATOR =
-            new Comparator<Operator>() {
-                @Override
-                public int compare(Operator o1, Operator o2) {
-                    return o1.ourKey.priority - o2.ourKey.priority;
-                }
-            };
-    public static final Comparator<Operator> TOKEN_COMPARATOR =
-            new Comparator<Operator>() {
-                @Override
-                public int compare(Operator o1, Operator o2) {
-                    return o1.ourKey.token.compareTo(o2.ourKey.token);
-                }
-            };
+    public static final Comparator<Operator> ASSOC_COMPARATOR = new Comparator<Operator>() {
+        @Override
+        public int compare(Operator o1, Operator o2) {
+            return o1.ourKey.assoc.compareTo(o2.ourKey.assoc);
+        }
+    };
+    public static final Comparator<Operator> PRIORITY_COMPARATOR = new Comparator<Operator>() {
+        @Override
+        public int compare(Operator o1, Operator o2) {
+            return o1.ourKey.priority - o2.ourKey.priority;
+        }
+    };
+    public static final Comparator<Operator> TOKEN_COMPARATOR = new Comparator<Operator>() {
+        @Override
+        public int compare(Operator o1, Operator o2) {
+            return o1.ourKey.token.compareTo(o2.ourKey.token);
+        }
+    };
 
     public static Operator registerOrGetOperator(String token, int prio,
             Associativeness assoc, NumberPlacement placement,
             OperatorRunner runner) {
-        OperatorLookupKey target =
-                new OperatorLookupKey(placement, assoc, prio, token);
+        OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
+                prio, token);
         Operator o = getOperator(token, placement);
         if (o != null) {
             OperatorLookupKey olk = o.ourKey;
@@ -117,9 +112,9 @@ public final class Operator {
                 return o;
             }
             // something mismatched...but the token matches. What do?
-            StringBuilder sb =
-                    new StringBuilder("Cannot override the operator ").append(
-                            token).append(" because ");
+            StringBuilder sb = new StringBuilder(
+                    "Cannot override the operator ").append(token).append(
+                    " because ");
             if (olk.priority != target.priority) {
                 sb.append("the ")
                         .append("priority mismatched (should have been ")
@@ -183,8 +178,8 @@ public final class Operator {
         } else if (isBigDec(a.getClass())) {
             theAnswer = runner.runBigDec(toBigDec(numbers));
         } else {
-            throw new UnsupportedOperationException("Unknown Number extender "
-                    + a.getClass());
+            throw new UnsupportedOperationException(
+                    "Unknown Number extender " + a.getClass());
         }
 
         Class<? extends Number> ac = a.getClass(), tc = theAnswer.getClass();
@@ -222,14 +217,15 @@ public final class Operator {
                 ret = BigInteger.valueOf(theAnswer.longValue());
             }
         } else {
-            System.err.println("[WARNING] Unaccounted for Number extender "
-                    + ac);
+            System.err
+                    .println("[WARNING] Unaccounted for Number extender " + ac);
         }
         return tk.cast(ret);
     }
 
     private static boolean isLong(Class<? extends Number> a) {
-        return a == Integer.class || a == Long.class || a == Byte.class
+        return a == Integer.class || a == Long.class
+                || a == Byte.class
                 || a == Short.class;
     }
 
@@ -323,8 +319,11 @@ public final class Operator {
                 break;
             default:
                 builder.append("Failed on " + Arrays.toString(numbers)
-                        + " with placement " + ourKey.placement + " (we are "
-                        + toString() + ")");
+                        + " with placement "
+                        + ourKey.placement
+                        + " (we are "
+                        + toString()
+                        + ")");
                 break;
         }
         return builder.toString();
@@ -332,8 +331,9 @@ public final class Operator {
 
     private void checkInputs(Number[] in) {
         if (in.length < inputCount()) {
-            throw new IllegalArgumentException("Not enough numbers for input "
-                    + concatToString("(needed ", Integer.valueOf(inputCount()),
+            throw new IllegalArgumentException(
+                    "Not enough numbers for input " + concatToString(
+                            "(needed ", Integer.valueOf(inputCount()),
                             ", got ", Integer.valueOf(in.length), ")"));
         }
     }

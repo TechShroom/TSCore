@@ -105,9 +105,8 @@ public class EvalException extends RuntimeException {
         if (args == null || args.length == 0) {
             return r.unformmated();
         }
-        if (r == Reason.TOO_MANY_NUMBERS
-                && (args[0].equals("1") || (args[0] instanceof Number && ((Number) args[0])
-                        .intValue() == 1))) {
+        if (r == Reason.TOO_MANY_NUMBERS && (args[0].equals("1") || (args[0] instanceof Number && ((Number) args[0])
+                .intValue() == 1))) {
             return Reason.TOO_MANY_NUMBERS_EXPECTED_ONE.formmated(Arrays
                     .copyOfRange(args, 1, args.length));
         }

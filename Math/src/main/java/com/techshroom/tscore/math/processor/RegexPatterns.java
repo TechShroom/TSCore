@@ -12,8 +12,8 @@ public final class RegexPatterns {
     /**
      * Regex to find functions.
      * */
-    public static final Pattern FUNCTION_GET_REGEX = Pattern.compile(FUNCTION
-            + LPAREN + ".*?" + RPAREN);
+    public static final Pattern FUNCTION_GET_REGEX = Pattern
+            .compile(FUNCTION + LPAREN + ".*?" + RPAREN);
     /**
      * Regex to find function define statements.
      * */

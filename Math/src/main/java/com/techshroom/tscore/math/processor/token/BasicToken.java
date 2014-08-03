@@ -31,8 +31,8 @@ public class BasicToken implements Token {
             return true;
         }
         if (obj instanceof BasicToken) {
-            return ((BasicToken) obj).value.equals(value)
-                    && ((BasicToken) obj).flag.equals(flag);
+            return ((BasicToken) obj).value.equals(value) && ((BasicToken) obj).flag
+                    .equals(flag);
         }
         return false;
     }

@@ -94,8 +94,10 @@ public class InfixProcessor extends ExpressionProcessor {
                     state = State.WAITING_FOR_LIST;
                 } else {
                     state = State.DEFAULT;
-                    throw new EvalException(Reason.PARSE_ERROR, "(", "after "
-                            + passToken.value() + "; before " + t.value());
+                    throw new EvalException(Reason.PARSE_ERROR, "(",
+                            "after " + passToken.value()
+                                    + "; before "
+                                    + t.value());
                 }
                 passToken = null;
                 return;
@@ -133,9 +135,10 @@ public class InfixProcessor extends ExpressionProcessor {
             if (!(t instanceof BasicToken)) {
                 // hmmm...
                 state = State.DEFAULT;
-                throw new RuntimeException("Token not a BasicToken,"
-                        + " ask dev to determine what should "
-                        + "happen here. Sorry! " + t);
+                throw new RuntimeException(
+                        "Token not a BasicToken," + " ask dev to determine what should "
+                                + "happen here. Sorry! "
+                                + t);
             }
             BasicToken bt = (BasicToken) t;
             handleBasicTokenStuff(bt, index);
@@ -151,14 +154,14 @@ public class InfixProcessor extends ExpressionProcessor {
                 if (tknstr.equals("(")) {
                     operators.push(t);
                 } else if (tknstr.equals(")")) {
-                    while (!operators.isEmpty()
-                            && !operators.peek().value().equals("(")) {
+                    while (!operators.isEmpty() && !operators.peek().value()
+                            .equals("(")) {
                         output.push(operators.pop());
                     }
                     if (operators.isEmpty()) {
                         throw new EvalException(Reason.PARSE_ERROR, "(",
-                                "somewhere before ) at "
-                                        + Integer.valueOf(index));
+                                "somewhere before ) at " + Integer
+                                        .valueOf(index));
                     }
                     operators.pop();
                 } else {
@@ -169,8 +172,8 @@ public class InfixProcessor extends ExpressionProcessor {
                 // some operator
                 Operator o1 = Operator.getOperator(t.value());
                 while (operators.peek() != null) {
-                    Operator o2 =
-                            Operator.getOperator(operators.peek().value());
+                    Operator o2 = Operator
+                            .getOperator(operators.peek().value());
                     Associativeness a1 = o1.getKey().getAssociativeness();
                     if (a1 == Associativeness.LEFT) {
                         if (Operator.PRIORITY_COMPARATOR.compare(o1, o2) <= 0) {
@@ -181,18 +184,19 @@ public class InfixProcessor extends ExpressionProcessor {
                             output.push(operators.pop());
                         }
                     } else {
-                        throw new EvalException(Reason.OPERATOR_ERROR, o1
-                                + " (not associative)");
+                        throw new EvalException(Reason.OPERATOR_ERROR,
+                                o1 + " (not associative)");
                     }
                     operators.push(t);
                 }
             } else if (t.flag() == TokenFlag.FUNCTION_DEF) {
                 // function def
             } else {
-                throw new EvalException(Reason.UKNOWN_ERROR, "Invalid token: "
-                        + t
-                        + concatToString(" (state: ", state, ", output=",
-                                output, ", operators=", operators));
+                throw new EvalException(Reason.UKNOWN_ERROR,
+                        "Invalid token: " + t
+                                + concatToString(" (state: ", state,
+                                        ", output=", output, ", operators=",
+                                        operators));
             }
         }
     }

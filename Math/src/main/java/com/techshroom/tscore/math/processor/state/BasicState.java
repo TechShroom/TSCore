@@ -15,8 +15,7 @@ public class BasicState {
      * The variable storage, since functions <i>are</i> variables this holds
      * them too.
      */
-    private final Map<String, Variable<?>> vars =
-            new HashMap<String, Variable<?>>();
+    private final Map<String, Variable<?>> vars = new HashMap<String, Variable<?>>();
 
     public BasicState() {
     }
@@ -40,8 +39,7 @@ public class BasicState {
     }
 
     public void addFunctions(Function<?>... fncs) {
-        List<Variable<Function<?>>> tmp =
-                new ArrayList<Variable<Function<?>>>();
+        List<Variable<Function<?>>> tmp = new ArrayList<Variable<Function<?>>>();
         for (Function<?> f : fncs) {
             if (vars.containsKey(f.name())) {
                 throw new EvalException(Reason.DUPLICATE, f.name() + "()",

@@ -107,8 +107,8 @@ public class ParsingTest {
             throw reThrow;
         } catch (Throwable t) {
             if (toThrow != null) {
-                System.err.println("Disregarding second throwable: "
-                        + t.getLocalizedMessage());
+                System.err.println("Disregarding second throwable: " + t
+                        .getLocalizedMessage());
             } else {
                 toThrow = t;
             }
@@ -120,8 +120,11 @@ public class ParsingTest {
 
     private static void assertThat(String expr, BigDecimal eq,
             ExpressionProcessor proc) {
-        System.err.println("Parsing '" + expr + "' with " + proc
-                + "; it should equal " + eq);
+        System.err.println("Parsing '" + expr
+                + "' with "
+                + proc
+                + "; it should equal "
+                + eq);
         BigDecimal result = proc.process();
         System.err.println("" + expr + "=" + result);
         assertEquals(eq, result);
