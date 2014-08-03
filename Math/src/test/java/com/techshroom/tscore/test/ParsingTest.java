@@ -56,18 +56,22 @@ public class ParsingTest {
     public void malformedOps() throws Throwable {
         assertThatWillFail("[90|");
     }
+
     @Test(expected = EvalException.class)
     public void emptyParens() throws Throwable {
         assertThatWillFail("()");
     }
+
     @Test(expected = EvalException.class)
     public void onlyLeftParen() throws Throwable {
         assertThatWillFail("(90");
     }
+
     @Test(expected = EvalException.class)
     public void onlyRightParen() throws Throwable {
         assertThatWillFail("90)");
     }
+
     @Test(expected = EvalException.class)
     public void backwardsParens() throws Throwable {
         assertThatWillFail(")90(");

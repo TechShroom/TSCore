@@ -17,8 +17,8 @@ public final class ExtraMath {
      */
     public static BigInteger factorial(BigInteger num1) {
         BigInteger one = BigInteger.ONE, fact = one;
-        for (BigInteger i = BigInteger.valueOf(2); lessThan(i, num1); i = i
-                .add(one)) {
+        for (BigInteger i = BigInteger.valueOf(2); lessThan(i, num1); i =
+                i.add(one)) {
             fact = fact.multiply(i);
         }
         return fact;

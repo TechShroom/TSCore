@@ -38,8 +38,9 @@ public class MethodizedSTDStream extends ByteArrayOutputStream {
     public synchronized void write(byte[] b, int off, int len) {
         try {
             String str = new String(Arrays.copyOfRange(b, off, len));
-            str = replaceAllButLast(str, "\\r?\\n",
-                    "$0" + Matcher.quoteReplacement(getMethod()));
+            str =
+                    replaceAllButLast(str, "\\r?\\n",
+                            "$0" + Matcher.quoteReplacement(getMethod()));
             if (lastNewline) {
                 data += getMethod() + str;
             } else {

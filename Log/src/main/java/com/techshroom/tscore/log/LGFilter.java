@@ -11,7 +11,8 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 import org.apache.logging.log4j.message.Message;
 
-@Plugin(name = "LGFilter", category = "Core", elementType = "filter", printObject = true)
+@Plugin(name = "LGFilter", category = "Core", elementType = "filter",
+        printObject = true)
 public class LGFilter extends AbstractFilter {
     private Set<LoggingGroup> logGroups = EnumSet.of(LoggingGroup.INFO,
             LoggingGroup.WARNING, LoggingGroup.ERROR);

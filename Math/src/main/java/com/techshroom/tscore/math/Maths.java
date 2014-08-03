@@ -45,16 +45,17 @@ public final class Maths {
          */
         public static Rectangle2D rotateRect(Rectangle2D r, double theta) {
             // store data
-            double x = r.getX(), y = r.getY(), w = r.getWidth(), h = r
-                    .getHeight();
+            double x = r.getX(), y = r.getY(), w = r.getWidth(), h =
+                    r.getHeight();
             // clear rect
             r.setRect(0, 0, 0, 0);
             // get points
-            Point2D[] points = new Point2D[] { new Point2D.Double(x, y),
-                    new Point2D.Double(w + x, h + y) };
+            Point2D[] points =
+                    new Point2D[] { new Point2D.Double(x, y),
+                            new Point2D.Double(w + x, h + y) };
             // calc cos/sin
-            double s = TrigTableLookup.sin(theta), c = TrigTableLookup
-                    .cos(theta);
+            double s = TrigTableLookup.sin(theta), c =
+                    TrigTableLookup.cos(theta);
             // expand rect to fit
             for (Point2D p : points) {
                 p.setLocation((p.getX() * c) - (p.getY() * s), (p.getX() * s)
@@ -108,8 +109,8 @@ public final class Maths {
      */
     public static double projectLineAlongSurface(double thetaSurface,
             double thetaLineToProject, double magnitude, boolean getY) {
-        double dp = dotProductAngles(magnitude, thetaLineToProject, 1,
-                thetaSurface);
+        double dp =
+                dotProductAngles(magnitude, thetaLineToProject, 1, thetaSurface);
         if (!getY) {
             System.out.println(dp);
             return dp * Math.cos(Math.toRadians(thetaSurface));
@@ -122,9 +123,9 @@ public final class Maths {
 
     public static double projectLineAlongSurfaceXY(double xSurface,
             double ySurface, double xLine, double yLine, boolean DoY) {
-        double dp = dotProduct(xLine, yLine,
-                Maths.normalizeX(xSurface, ySurface),
-                Maths.normalizeY(xSurface, ySurface));
+        double dp =
+                dotProduct(xLine, yLine, Maths.normalizeX(xSurface, ySurface),
+                        Maths.normalizeY(xSurface, ySurface));
         if (!DoY) {
             System.out.println(dp);
             return dp * xSurface;
@@ -221,7 +222,8 @@ public final class Maths {
         private static final double circleSize = 360d;
         private static final double doubleCircleSize = circleSize * 2;
         private static final int virtualSize = 1048576;
-        private static final double conversionFactor = (virtualSize / circleSize);
+        private static final double conversionFactor =
+                (virtualSize / circleSize);
         private static final double tanLeadingCoefficient = (-circleSize
                 / Math.PI * 2);
         private static final double[] SinTable = new double[16384];

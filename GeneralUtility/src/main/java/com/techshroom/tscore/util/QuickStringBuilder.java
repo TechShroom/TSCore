@@ -46,8 +46,8 @@ public final class QuickStringBuilder {
                 if (addQuotes) {
                     sb.append("'");
                 } else {
-                    addQuotes = endsWith_array((String) o,
-                            BUILD_DEFAULT_ENDSWITH);
+                    addQuotes =
+                            endsWith_array((String) o, BUILD_DEFAULT_ENDSWITH);
                     continue;
                 }
             }
@@ -96,7 +96,8 @@ public final class QuickStringBuilder {
         return o;
     }
 
-    private static final boolean endsWith_array(String s, String[] possibilites) {
+    private static final boolean
+            endsWith_array(String s, String[] possibilites) {
         boolean yes = false;
         for (String check : possibilites) {
             yes |= s.endsWith(check);

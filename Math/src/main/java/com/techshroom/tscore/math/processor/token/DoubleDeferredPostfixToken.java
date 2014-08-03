@@ -2,7 +2,8 @@ package com.techshroom.tscore.math.processor.token;
 
 import com.techshroom.tscore.math.processor.PostfixProcessor;
 
-public class DoubleDeferredPostfixToken extends PostfixProcessor implements Token {
+public class DoubleDeferredPostfixToken extends PostfixProcessor implements
+        Token {
     public DoubleDeferredPostfixToken(String val) {
         super(val);
     }

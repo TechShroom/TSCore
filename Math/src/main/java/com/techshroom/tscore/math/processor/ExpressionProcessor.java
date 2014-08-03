@@ -77,8 +77,8 @@ public abstract class ExpressionProcessor {
                 if (bt.flag() == TokenFlag.OPERATOR) {
                     String test = bt.value();
                     String orig = test;
-                    Deque<MatchInfo> check = new ArrayDeque<MatchInfo>(
-                            test.length());
+                    Deque<MatchInfo> check =
+                            new ArrayDeque<MatchInfo>(test.length());
                     Operator flag = Operator.getOperator(test);
                     boolean flagPassed = false;
                     while (!flagPassed) {
@@ -107,8 +107,9 @@ public abstract class ExpressionProcessor {
                     continue;
                 } else if (bt.flag() == TokenFlag.FUNCTION) {
                     String funcWithArgs = bt.value();
-                    String name = funcWithArgs.replaceFirst(FUNCTION + LPAREN
-                            + "(.+)" + RPAREN, "$1");
+                    String name =
+                            funcWithArgs.replaceFirst(FUNCTION + LPAREN
+                                    + "(.+)" + RPAREN, "$1");
 
                     // name
                     static_onToken(new BasicToken(name, bt.flag()), callback,
@@ -140,8 +141,9 @@ public abstract class ExpressionProcessor {
 
     private static Token createArgsList(String funcWithArgs, int indBase) {
         List<Token> args = new ArrayList<Token>();
-        String argsStr = funcWithArgs.replaceFirst(FUNCTION + LPAREN + "(.+)"
-                + RPAREN, "$2");
+        String argsStr =
+                funcWithArgs.replaceFirst(FUNCTION + LPAREN + "(.+)" + RPAREN,
+                        "$2");
         char[] str_to_chr = argsStr.toCharArray();
         String parseNext = "";
         LinkedList<Integer> modes = new LinkedList<Integer>();
