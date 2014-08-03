@@ -11,7 +11,6 @@ import com.techshroom.tscore.log.LogProvider;
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.processor.*;
 import com.techshroom.tscore.math.processor.token.DeferredInfixToken;
-import com.techshroom.tscore.math.processor.token.DeferredPostfixToken;
 
 @SuppressWarnings("static-method")
 public class ParsingTest {

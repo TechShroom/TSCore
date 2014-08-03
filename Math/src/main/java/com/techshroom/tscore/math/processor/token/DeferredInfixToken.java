@@ -7,6 +7,7 @@ import com.techshroom.tscore.math.processor.InfixProcessor;
 
 public class DeferredInfixToken extends InfixProcessor implements Token {
     private final List<Token> values;
+    private int ind = 0;
 
     public DeferredInfixToken(List<Token> val) {
         // string value not used
@@ -27,7 +28,8 @@ public class DeferredInfixToken extends InfixProcessor implements Token {
 
     private void doTokenize() {
         for (Token t : values) {
-            super_onToken(t, -1);
+            super_onToken(t, ind);
+            ind += t.value().length();
         }
     }
 

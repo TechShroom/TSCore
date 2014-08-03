@@ -105,7 +105,7 @@ public final class Operator {
             OperatorRunner runner) {
         OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
                 prio, token);
-        Operator o = getOperator(token, placement);
+        Operator o = getOperator(token);
         if (o != null) {
             OperatorLookupKey olk = o.ourKey;
             if (olk.equals(target)) {

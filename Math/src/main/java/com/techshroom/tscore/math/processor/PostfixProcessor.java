@@ -9,12 +9,7 @@ import com.techshroom.tscore.math.operator.*;
 import com.techshroom.tscore.math.processor.token.*;
 
 public class PostfixProcessor {
-    private static enum State {
-        DEFAULT, WAITING_FOR_OP_ARG;
-    }
-
     private final LinkedList<NumberToken> stack = new LinkedList<NumberToken>();
-    private State state = State.DEFAULT;
     private Operator hold;
     protected BigDecimal result;
 
@@ -34,18 +29,19 @@ public class PostfixProcessor {
 
     protected void onToken(Token t, int index) {
         if (t instanceof NumberToken) {
-            if (state == State.WAITING_FOR_OP_ARG) {
-                stack.push(new NumberToken(hold.runTheNumbers(((NumberToken) t)
-                        .getBigDecimal())));
-                state = State.DEFAULT;
-                return;
-            }
             stack.push((NumberToken) t);
         } else if (t instanceof BasicToken) {
             BasicToken bt = (BasicToken) t;
             if (bt.flag() == TokenFlag.OPERATOR) {
                 Operator o = Operator.getOperator(bt.value());
-                System.err.println("op proc on " + stack);
+                System.err.println(o + " proc on " + stack);
+                if (o.getKey().getPlacement() == NumberPlacement.RIGHT) {
+                    // special case: op is to the left, apply to the right
+                    throw new EvalException(
+                            Reason.UKNOWN_ERROR,
+                            "Can't handle placement RIGHT in RPN, " + "it doesn't know "
+                                    + "what placement is!");
+                }
                 if (o.inputCount() <= stack.size()) {
                     // enough values
                     BigDecimal[] args = new BigDecimal[o.inputCount()];
@@ -54,10 +50,6 @@ public class PostfixProcessor {
                     }
                     BigDecimal res = o.runTheNumbers(args);
                     stack.push(new NumberToken(res));
-                } else if (o.getKey().getPlacement() == NumberPlacement.RIGHT) {
-                    // special case: op is to the left, apply to the right
-                    state = State.WAITING_FOR_OP_ARG;
-                    hold = o;
                 } else {
                     throw new EvalException(Reason.NO_NUMBERS);
                 }

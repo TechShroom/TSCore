@@ -7,6 +7,7 @@ import com.techshroom.tscore.math.processor.PostfixProcessor;
 
 public class DeferredPostfixToken extends PostfixProcessor implements Token {
     private final List<Token> values;
+    private int ind = 0;
 
     public DeferredPostfixToken(List<Token> val) {
         values = new ArrayList<Token>(val);
@@ -26,7 +27,8 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
 
     private void doTokenize() {
         for (Token t : values) {
-            super_onToken(t, -1);
+            super_onToken(t, ind);
+            ind += t.value().length();
         }
     }
 
