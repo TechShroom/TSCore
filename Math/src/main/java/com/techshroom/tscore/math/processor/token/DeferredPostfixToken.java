@@ -11,6 +11,7 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
         // string value not used
         super(val.toString());
         values = val;
+        System.err.println(toString());
     }
 
     @Override
@@ -21,7 +22,7 @@ public class DeferredPostfixToken extends PostfixProcessor implements Token {
     @Override
     public void doTheHardWork() {
         doTokenize();
-        // generateResult();
+        generateResult();
     }
 
     private void doTokenize() {

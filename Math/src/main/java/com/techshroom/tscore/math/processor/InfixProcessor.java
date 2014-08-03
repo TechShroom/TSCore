@@ -7,6 +7,7 @@ import java.util.*;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
+import com.techshroom.tscore.math.operator.Associativeness;
 import com.techshroom.tscore.math.operator.Operator;
 import com.techshroom.tscore.math.processor.token.*;
 
@@ -47,6 +48,7 @@ public class InfixProcessor extends ExpressionProcessor {
     }
 
     protected void generateResult() {
+        worker.finish();
         result = new DeferredPostfixToken(worker.output).process();
         System.err.println(worker.output + " from " + Thread.currentThread());
     }
@@ -62,6 +64,23 @@ public class InfixProcessor extends ExpressionProcessor {
             output = new LinkedList<Token>();
             operators = new LinkedList<Token>();
             funcList = new ArrayList<Token>();
+        }
+
+        protected void finish() {
+            while (!operators.isEmpty()) {
+                Token t = operators.pop();
+                if (t instanceof BasicToken) {
+                    BasicToken bt = (BasicToken) t;
+                    if (bt.flag() == TokenFlag.OTHER && bt.value().equals("(")) {
+                        throw new EvalException(Reason.PARSE_ERROR, "(",
+                                "before EOL");
+                    } else {
+                        output.push(bt);
+                    }
+                } else {
+                    output.push(t);
+                }
+            }
         }
 
         private void onToken(Token t, int index) {
@@ -130,18 +149,42 @@ public class InfixProcessor extends ExpressionProcessor {
                 return;
             } else if (t.flag() == TokenFlag.OTHER) {
                 if (tknstr.equals("(")) {
-                    operators.add(t);
+                    operators.push(t);
                 } else if (tknstr.equals(")")) {
-                    operators.add(t);
+                    while (!operators.isEmpty()
+                            && !operators.peek().value().equals("(")) {
+                        output.push(operators.pop());
+                    }
+                    if (operators.isEmpty()) {
+                        throw new EvalException(Reason.PARSE_ERROR, "(",
+                                "somewhere before ) at "
+                                        + Integer.valueOf(index));
+                    }
+                    operators.pop();
                 } else {
                     throw new EvalException(Reason.PARSE_ERROR, "( or )",
                             Integer.valueOf(index));
                 }
             } else if (t.flag() == TokenFlag.OPERATOR) {
                 // some operator
+                Operator o1 = Operator.getOperator(t.value());
                 while (operators.peek() != null) {
-                    Operator pop = Operator
-                            .getOperator(operators.pop().value());
+                    Operator o2 =
+                            Operator.getOperator(operators.peek().value());
+                    Associativeness a1 = o1.getKey().getAssociativeness();
+                    if (a1 == Associativeness.LEFT) {
+                        if (Operator.PRIORITY_COMPARATOR.compare(o1, o2) <= 0) {
+                            output.push(operators.pop());
+                        }
+                    } else if (a1 == Associativeness.RIGHT) {
+                        if (Operator.PRIORITY_COMPARATOR.compare(o1, o2) < 0) {
+                            output.push(operators.pop());
+                        }
+                    } else {
+                        throw new EvalException(Reason.OPERATOR_ERROR, o1
+                                + " (not associative)");
+                    }
+                    operators.push(t);
                 }
             } else if (t.flag() == TokenFlag.FUNCTION_DEF) {
                 // function def

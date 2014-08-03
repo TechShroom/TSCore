@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public final class Operator {
-    private static final class OperatorLookupKey {
+    public static final class OperatorLookupKey {
         private final NumberPlacement placement;
         private final Associativeness assoc;
         private final int priority;
@@ -19,6 +19,34 @@ public final class Operator {
             assoc = assc;
             priority = pri;
             token = tkn;
+        }
+
+        /**
+         * @return the placement
+         */
+        public NumberPlacement getPlacement() {
+            return placement;
+        }
+
+        /**
+         * @return the associativeness
+         */
+        public Associativeness getAssociativeness() {
+            return assoc;
+        }
+
+        /**
+         * @return the priority
+         */
+        public int getPriority() {
+            return priority;
+        }
+
+        /**
+         * @return the token
+         */
+        public String getToken() {
+            return token;
         }
 
         @Override
@@ -251,6 +279,10 @@ public final class Operator {
         }
 
         return false;
+    }
+
+    public OperatorLookupKey getKey() {
+        return ourKey;
     }
 
     public int inputCount() {

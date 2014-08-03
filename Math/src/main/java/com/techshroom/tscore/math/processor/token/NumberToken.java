@@ -6,7 +6,7 @@ public class NumberToken extends BasicToken {
     private final BigDecimal value;
 
     public NumberToken(BigDecimal val) {
-        super(val.toPlainString(), TokenFlag.LIST);
+        super(val.toPlainString(), TokenFlag.NUMBER);
         value = val;
     }
 
