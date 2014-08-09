@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.exceptions.EvalException.Reason;
+import com.techshroom.tscore.math.operator.NumberPlacement;
 import com.techshroom.tscore.math.operator.Operator;
 import com.techshroom.tscore.math.processor.token.*;
 import com.techshroom.tscore.regex.ExtendedMatcher;
@@ -78,15 +79,16 @@ public abstract class ExpressionProcessor {
                     String orig = test;
                     Deque<MatchInfo> check = new ArrayDeque<MatchInfo>(
                             test.length());
-                    Operator flag = Operator.getOperator(test);
+                    Map<NumberPlacement, Operator> flag = Operator
+                            .getOperatorsReadOnly(test);
                     boolean flagPassed = false;
                     while (!flagPassed) {
                         splitInto(test, check, orig);
                         while (!check.isEmpty()) {
                             MatchInfo mtest = check.pollLast();
                             test = mtest.getMatch();
-                            flag = Operator.getOperator(test);
-                            if (flag != null) {
+                            flag = Operator.getOperatorsReadOnly(test);
+                            if (!flag.isEmpty()) {
                                 static_onToken(new BasicToken(test, bt.flag()),
                                         callback, hold + orig.indexOf(test),
                                         building);

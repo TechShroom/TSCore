@@ -56,8 +56,7 @@ public final class Operator {
             }
             if (obj instanceof OperatorLookupKey) {
                 OperatorLookupKey olk = (OperatorLookupKey) obj;
-                return olk.placement == placement && olk.priority == priority
-                        && olk.assoc == assoc
+                return olk.priority == priority && olk.assoc == assoc
                         && token.equalsIgnoreCase(olk.token);
             }
             return false;
@@ -79,7 +78,7 @@ public final class Operator {
     }
 
     private static final Map<OperatorLookupKey, Operator> lookups = new HashMap<OperatorLookupKey, Operator>();
-    private static final Map<String, Operator> tokenLookups = new HashMap<String, Operator>();
+    private static final Map<String, Map<NumberPlacement, Operator>> tokenLookups = new HashMap<String, Map<NumberPlacement, Operator>>();
 
     public static final Comparator<Operator> ASSOC_COMPARATOR = new Comparator<Operator>() {
         @Override
@@ -105,7 +104,7 @@ public final class Operator {
             OperatorRunner runner) {
         OperatorLookupKey target = new OperatorLookupKey(placement, assoc,
                 prio, token);
-        Operator o = getOperator(token);
+        Operator o = getOperator(token, placement);
         if (o != null) {
             OperatorLookupKey olk = o.ourKey;
             if (olk.equals(target)) {
@@ -125,11 +124,6 @@ public final class Operator {
                         .append("associativeness mismatched (should have been ")
                         .append(olk.assoc).append(" was ").append(target.assoc)
                         .append(")");
-            } else if (olk.placement != target.placement) {
-                sb.append("the ")
-                        .append("placement mismatched (should have been ")
-                        .append(olk.placement).append(" was ")
-                        .append(target.placement).append(")");
             } else {
                 sb.append("an unknown error occured");
             }
@@ -139,21 +133,27 @@ public final class Operator {
         // no operator yet: define it
         o = new Operator(target, runner);
         lookups.put(target, o);
-        tokenLookups.put(token, o);
-        return getOperator(token);
+        getOperators(token).put(placement, o);
+        return getOperator(token, placement);
     }
 
-    public static Operator getOperator(String token) {
-        return tokenLookups.get(token);
+    private static Map<NumberPlacement, Operator> getOperators(String token) {
+        Map<NumberPlacement, Operator> put = tokenLookups.get(token);
+        if (put == null) {
+            put = new HashMap<NumberPlacement, Operator>();
+            tokenLookups.put(token, put);
+        }
+        return put;
+    }
+
+    public static Map<NumberPlacement, Operator> getOperatorsReadOnly(
+            String token) {
+        return Collections.unmodifiableMap(getOperators(token));
     }
 
     public static Operator getOperator(String token,
             NumberPlacement requestedPlacement) {
-        Operator o = getOperator(token);
-        if (o == null || o.ourKey.placement != requestedPlacement) {
-            return null;
-        }
-        return o;
+        return getOperators(token).get(requestedPlacement);
     }
 
     private final OperatorLookupKey ourKey;

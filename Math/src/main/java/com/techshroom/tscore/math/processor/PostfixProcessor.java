@@ -30,33 +30,25 @@ public class PostfixProcessor {
     protected void onToken(Token t, int index) {
         if (t instanceof NumberToken) {
             stack.push((NumberToken) t);
+        } else if (t instanceof OperatorToken) {
+            OperatorToken ot = (OperatorToken) t;
+            Operator o = ot.getOp();
+            System.err.println(o + " proc on " + stack);
+            if (o.inputCount() <= stack.size()) {
+                // enough values
+                BigDecimal[] args = new BigDecimal[o.inputCount()];
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = stack.pop().getBigDecimal();
+                }
+                BigDecimal res = o.runTheNumbers(args);
+                stack.push(new NumberToken(res));
+            } else {
+                throw new EvalException(Reason.NO_NUMBERS);
+            }
         } else if (t instanceof BasicToken) {
             BasicToken bt = (BasicToken) t;
-            if (bt.flag() == TokenFlag.OPERATOR) {
-                Operator o = Operator.getOperator(bt.value());
-                System.err.println(o + " proc on " + stack);
-                if (o.getKey().getPlacement() == NumberPlacement.RIGHT) {
-                    // special case: op is to the left, apply to the right
-                    throw new EvalException(
-                            Reason.UKNOWN_ERROR,
-                            "Can't handle placement RIGHT in RPN, " + "it doesn't know "
-                                    + "what placement is!");
-                }
-                if (o.inputCount() <= stack.size()) {
-                    // enough values
-                    BigDecimal[] args = new BigDecimal[o.inputCount()];
-                    for (int i = 0; i < args.length; i++) {
-                        args[i] = stack.pop().getBigDecimal();
-                    }
-                    BigDecimal res = o.runTheNumbers(args);
-                    stack.push(new NumberToken(res));
-                } else {
-                    throw new EvalException(Reason.NO_NUMBERS);
-                }
-            } else {
-                throw new EvalException(Reason.UKNOWN_ERROR,
-                        "Can't handle " + bt + " yet!");
-            }
+            throw new EvalException(Reason.UKNOWN_ERROR, "Can't handle " + bt
+                    + " yet!");
         }
     }
 
