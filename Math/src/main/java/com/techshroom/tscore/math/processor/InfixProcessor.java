@@ -184,7 +184,8 @@ public class InfixProcessor extends ExpressionProcessor {
                 }
             } else if (t.flag() == TokenFlag.OPERATOR) {
                 // some operator
-                Operator o1 = Operator.getOperator(t.value());
+                Operator o1 = Operator.getOperator(t.value(),
+                        NumberPlacement.BOTH);
                 if (state.peek() == State.__NOTE_LAST_OP) {
                     o1 = Operator.getOperator(t.value(), NumberPlacement.RIGHT);
                     if (o1 != null) {
@@ -201,8 +202,8 @@ public class InfixProcessor extends ExpressionProcessor {
                     state.push(State.__NOTE_LAST_OP);
                 }
                 while (operators.peek() != null) {
-                    Operator o2 = Operator
-                            .getOperator(operators.peek().value());
+                    Operator o2 = Operator.getOperator(
+                            operators.peek().value(), NumberPlacement.BOTH);
                     System.err.println(concatToString("checking ", o2, " aka ",
                             o2.getKey()));
                     Associativeness a1 = o1.getKey().getAssociativeness();

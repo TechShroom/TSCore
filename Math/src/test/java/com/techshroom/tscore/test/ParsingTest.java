@@ -4,14 +4,14 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import com.techshroom.tscore.log.LogProvider;
 import com.techshroom.tscore.math.exceptions.EvalException;
 import com.techshroom.tscore.math.processor.*;
 import com.techshroom.tscore.math.processor.token.DeferredInfixToken;
 
+@Ignore
 @SuppressWarnings("static-method")
 public class ParsingTest {
 
