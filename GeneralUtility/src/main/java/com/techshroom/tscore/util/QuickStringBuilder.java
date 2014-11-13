@@ -98,10 +98,11 @@ public final class QuickStringBuilder {
 
     private static final boolean
             endsWith_array(String s, String[] possibilites) {
-        boolean yes = false;
         for (String check : possibilites) {
-            yes |= s.endsWith(check);
+            if (s.endsWith(check)) {
+                return true;
+            }
         }
-        return yes;
+        return false;
     }
 }
