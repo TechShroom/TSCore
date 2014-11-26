@@ -140,7 +140,7 @@ task release(dependsOn: ['setupGithub', 'doBuild']) << {
     def name = _property("name")
 
     if (name == "" || name == null) {
-        name = "UnplannedDescent-all-" + nrs.tag()
+        name = "TSCore-all-" + nrs.tag()
     }
 
     nrs.assets().upload(bytes, "application/java-archive", "$name.jar")
