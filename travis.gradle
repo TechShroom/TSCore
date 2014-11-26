@@ -67,4 +67,4 @@ task travisRelease(dependsOn: ['_zipassets']) << {
     doSubmit("http://techshroom.com/non-wp/uploads/manager/commit.php", data);
 }
 
-travisRelease.onlyIf { _hasProperty("TRAVIS_SECURE_ENV_VARS ") && _property("TRAVIS_SECURE_ENV_VARS ").toBoolean() }
+travisRelease.onlyIf { _hasProperty("TRAVIS_SECURE_ENV_VARS") && _property("TRAVIS_SECURE_ENV_VARS").toBoolean() }
