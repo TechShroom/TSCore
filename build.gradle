@@ -1,3 +1,7 @@
+plugins {
+    id "com.github.hierynomus.license" version "0.11.0"
+}
+
 ext.FTP_USER="ket1999"
 version = ext.version = "1.0.0"
 
@@ -39,7 +43,7 @@ dirList(".").each{
     subdeps[it.getName()] = []
     submvn[it.getName()] = []
     testsubdeps[it.getName()] = ["Log"]
-    testsubmvn[it.getName()] = ["junit:junit:4+"]
+    testsubmvn[it.getName()] = ["junit:junit:[4.12,)"]
 }
 
 subdeps["Math"] += "GeneralUtility"
@@ -56,6 +60,12 @@ subprojects {
 
     def root = getParent()
     root.doBuild.dependsOn(":$name:build")
+
+    apply plugin: 'license'
+    license {
+        header root.file('LICENSE')
+        strictCheck true
+    }
     // java 6 compat
     compileJava.sourceCompatibility = '1.6'
     compileJava.targetCompatibility = '1.6'
@@ -99,8 +109,76 @@ subprojects {
             testCompile project(":$it")
         }
     }
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+        version = project.version
+    }
+    task javadocJar(type: Jar) {
+        from javadoc
+        classifier = 'javadoc'
+        version = project.version
+    }
+    artifacts {
+        archives sourceJar, javadocJar
+    }
 
     println '=== Complete ==='
+}
+
+if (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) {
+    subprojects {
+        apply plugin: 'maven'
+        apply plugin: 'signing'
+        signing {
+            sign configurations.archives
+        }
+        uploadArchives {
+          repositories {
+            mavenDeployer {
+              beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+              repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+              }
+
+              snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+              }
+
+              pom.project {
+                groupId "com.techshroom"
+                name "tscore-${project.name}"
+                packaging 'jar'
+                description 'TSCore is a common library for pretty much anything.'
+                
+                url 'https://github.com/TechShroom/TSCore'
+
+                scm {
+                  connection 'git://github.com/TechShroom/TSCore'
+                  developerConnection 'git://github.com/TechShroom/TSCore'
+                  url 'https://github.com/TechShroom/TSCore'
+                }
+
+                licenses {
+                  license {
+                    name 'The MIT License'
+                    url 'https://github.com/TechShroom/TSCore/blob/master/LICENSE'
+                  }
+                }
+
+                developers {
+                  developer {
+                    id 'kenzierocks'
+                    name 'Kenzie Togami'
+                    email 'ket1999@gmail.com'
+                  }
+                }
+              }
+            }
+          }
+        }
+    }
 }
 
 if (_hasProperty("TRAVIS") && _property("TRAVIS").toBoolean()) {

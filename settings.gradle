@@ -3,5 +3,8 @@ File[] dirList(String dir) {
 }
 
 dirList(".").each{
+    if (it.getName() == "build") {
+        return
+    }
     include it.getName()
 }
